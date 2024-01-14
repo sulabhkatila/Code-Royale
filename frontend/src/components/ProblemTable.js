@@ -37,7 +37,7 @@ export default function ProblemTable({ problems }) {
       "px-6 py-3 text-xs font-medium tracking-wider text-left uppercase";
 
     return (
-      <thead className="text-sm uppercase border-b text-light-gray">
+      <thead className="text-sm text-white uppercase border-b">
         <tr className="font-bold text-left">
           <th scope="col" className={`${thClass} max-w-[20px]`}>
             Status
@@ -57,7 +57,7 @@ export default function ProblemTable({ problems }) {
   }
 
   function ProblemRow({ problem, index }) {
-    const tdClass = "px-5 py-5 whitespace-nowrap overflow-x-auto";
+    const tdClass = "px-5 py-5 whitespace-nowrap overflow-x-auto text-white";
     return (
       <tr className={getClassNamesForIndex(index)}>
         <td className={`${tdClass}`}>

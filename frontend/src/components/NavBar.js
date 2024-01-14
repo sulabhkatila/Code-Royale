@@ -10,7 +10,7 @@ export default function NavBar() {
     }
 
     return (
-        <nav className="bg-dark-2 flex h-[65px] w-full shrink-0 items-center px-9 text-dark-gray">
+        <nav className="bg-dark-2 flex h-[60px] w-full shrink-0 items-center px-9 text-dark-gray">
             <div className="flex justify-between w-full min-w-[500px]">
                 <div>
                     <Link to="/"> Coderoyale </Link>

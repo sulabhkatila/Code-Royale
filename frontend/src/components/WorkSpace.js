@@ -28,16 +28,16 @@ export default function WorkSpace({ problem }) {
   function TestCases() {
     return (
       <div>
-      <div className="flex flex-col h-full bg-dark-2 text-light-gray">
-        <div className="overflow-y-auto">test cases</div>
-        
-      </div>
+        <div className="flex flex-col h-full bg-dark-2 text-light-gray">
+          <div className="overflow-y-auto">test cases</div>
+        </div>
       </div>
     );
   }
 
   function CodeEditor() {
     const codeInEditor = useRef(null);
+    const editorRef = useRef(null); //
 
     function handleEditorChange(value, event) {
       codeInEditor.current = value;
@@ -45,6 +45,19 @@ export default function WorkSpace({ problem }) {
 
     function handleEditorDidMount(editor, monaco) {
       codeInEditor.current = editor.getValue();
+      editorRef.current = editor;
+    }
+
+    function editCodeInEditor() {
+      console.log(codeInEditor.current);
+
+      // formatting possibly, prettier is only for javascript
+      // current value
+      //const unformatted = editorRef.current.getValue();
+      // format
+      // const formatted = prettier.format(unformatted, {parser: 'babel}, plugins: [parser], useTabs: truw, semi: true, singleQuote: false)
+      // set the formatted calue back in the editor
+      //editorRef.current.setValue(formatted);
     }
 
     return (
@@ -76,7 +89,12 @@ export default function WorkSpace({ problem }) {
 
   return (
     <div className="flex flex-col w-full h-screen">
-      <Split className="h-full" direction="vertical" sizes={[70, 30]} minSize={[51, 100]}>
+      <Split
+        className="h-full"
+        direction="vertical"
+        sizes={[70, 30]}
+        minSize={[51, 100]}
+      >
         <div className="h-full">
           <EditorNav />
           <div className="w-full h-full">
@@ -86,8 +104,8 @@ export default function WorkSpace({ problem }) {
         <TestCases />
       </Split>
       <div className="relative z-10 flex justify-end w-full py-2 mt-auto bg-dark-1">
-          <button className="px-3 py-1 rounded-lg bg-gold">Submit</button>
-        </div>
+        <button className="px-3 py-1 rounded-lg bg-gold">Submit</button>
+      </div>
     </div>
   );
 }
