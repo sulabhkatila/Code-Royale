@@ -53,7 +53,7 @@ const problemSchema = new Schema(
         message: (props) => `Each sub-array should contain exactly 3 elements`,
       },
     },
-    boiletPlate: {
+    boilerPlate: {
       type: Map,
       of: String,
       required: true,
