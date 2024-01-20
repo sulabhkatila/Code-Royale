@@ -18,7 +18,7 @@ module.exports = {
         "light-gray": "#D3d3d3",
         "light-gray-2": "#3a3a3a",
         "light-green": "#00B8A3",
-        "gold": "#8A6508",
+        "gold": "#FFC01E",
       }
     },
   },

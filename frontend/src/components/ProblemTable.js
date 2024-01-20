@@ -66,7 +66,7 @@ export default function ProblemTable({ problems }) {
         <td className={`${tdClass}`}>
           <Link
             to={`/problem/${problem.name}`}
-            className="cursor-pointer hover:text-blue-600"
+            className="cursor-pointer hover:text-blue-400"
           >
             {problem.title}
           </Link>

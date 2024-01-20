@@ -58,13 +58,13 @@ const userSchema = new Schema(
 // Password hash middleware
 userSchema.pre("save", function (next) {
   if (this.isModified("password")) {
-    this.password = bycrypt.hashSync(this.password, 10);
+    this.password = bcrypt.hashSync(this.password, 10);
   }
   next();
 });
 
 // Static register method
-userSchema.statics.register = async function (username, email, password) {
+userSchema.statics.register = async function ({username, email, password}) {
   if (!username || !email || !password) {
     throw Error(
       `Missing fields: ${username ? "" : "username"} ${email ? "" : "email"} ${

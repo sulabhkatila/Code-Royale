@@ -1,33 +1,44 @@
-import { createContext, useReducer } from 'react';
+import { createContext, useReducer, useEffect } from "react";
 
 export const AuthContext = createContext();
 
 export const authReducer = (state, action) => {
-    switch (action.type) {
-        case "LOGIN":
-        localStorage.setItem("user", JSON.stringify(action.payload.user));
-        return {
-            ...state,
-            user: action.payload
-        };
-        case "LOGOUT":
-        localStorage.clear();
-        return {
-            ...state,
-            user: null,
-            token: null,
-        };
-        default:
-        return state;
-    }
-}
+  switch (action.type) {
+    case "LOGIN":
+      localStorage.setItem("user", JSON.stringify(action.payload));
+      return {
+        ...state,
+        user: action.payload,
+      };
+    case "LOGOUT":
+      localStorage.removeItem("user");
+      return {
+        ...state,
+        user: null,
+        token: null,
+      };
+    default:
+      return state;
+  }
+};
 
-export const AuthContextProvider = ({children}) => {
-    return (
-        <AuthContext.Provider value={useReducer(authReducer, {
-            user: JSON.parse(localStorage.getItem("user")) || null
-        })}>
-            {children}
-        </AuthContext.Provider>
-    )
-}
+export const AuthContextProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(authReducer, { user: null });
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user) {
+      dispatch({
+        type: "LOGIN",
+        payload: user,
+      });
+    }
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ ...state, dispatch }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};

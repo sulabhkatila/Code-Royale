@@ -36,11 +36,68 @@ const getProblem = async (req, res) => {
       res.status(404).json({ message: "Problem not found" });
     }
   } catch (err) {
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ error: "Server Error" });
   }
 };
 
-modeule.exports = {
+const addProblem = async (req, res) => {
+  const problem = new Problem({
+    name: req.body.name,
+    title: req.body.title,
+    description: req.body.description,
+    difficulty: req.body.difficulty,
+    tags: req.body.tags,
+    example: req.body.example,
+    boilerPlate: req.body.boiletPlate,
+    notes: req.body.notes,
+  });
+
+  try {
+    const savedProblem = await problem.save();
+    res.status(201).json(savedProblem);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+};
+
+const deleteProblem = async (req, res) => {
+  const name = req.query.name;
+
+  try {
+    const problem = await Problem.findOneAndDelete({ name });
+    if (!problem) {
+      return res.status(404).send("Problem not found");
+    }
+    res.status(200).json(problem);
+  } catch (err) {
+    res.status(500).send("Server Error");
+  }
+}
+
+const submitSolution = async (req, res) => {
+  const problemName = req.body.problem;
+  const language = req.body.language;
+  const solution = req.body.solution;
+
+  try {
+    const problem = Problem.findOne({ name: problemName });
+
+    if (!problem) {
+      return res.status(404).json({ message: "Problem not found" });
+    }
+
+    const result = problem.compareSolution(language, solution);
+
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+module.exports = {
   getProblemSet,
   getProblem,
+  addProblem,
+  deleteProblem,
+  submitSolution,
 };

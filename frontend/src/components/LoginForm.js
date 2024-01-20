@@ -1,20 +1,53 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useLogin } from "../hooks/useLogin";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 export default function LoginForm() {
+  const { user } = useAuthContext();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const { login, loading, error } = useLogin();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "username") setUsername(value);
+    if (name === "password") setPassword(value);
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    await login(username, password);
+  };
+
+  if (loading)
+    return <div className="h-screen text-white bg-dark-1">Loading...</div>;
+
   return (
     <div className="flex items-center justify-center h-screen font-mono text-white bg-dark-1">
-      <div className=''>
+      <div className="">
         <div className="relative p-8 border rounded-lg shadow-lg bg-slate-800 border-slate-400 backdrop-filter backdrop-blur-sm bg-opacity-30 ">
           <h2 className="mb-6 text-4xl text-center text-whitefont-bold">
             Login
           </h2>
-          <form action="">
+          <form action="" onSubmit={handleLogin}>
             <div className="relative my-4">
               <input
+                name="username"
                 type="username"
                 className="block px-0 py-3 text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none w-72 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:text-white focus:border-blue-600 peer"
                 placeholder=""
+                onChange={handleChange}
               />
               <label
                 htmlFor="username"
@@ -25,9 +58,11 @@ export default function LoginForm() {
             </div>
             <div className="relative my-4">
               <input
+                name="password"
                 type="password"
                 className="block px-0 py-3 text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none w-72 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:text-white focus:border-blue-600 peer"
                 placeholder=""
+                onChange={handleChange}
               />
               <label
                 htmlFor="email"

@@ -7,10 +7,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("api/auth", require("./routes/auth"));
-app.use("api/user", require("./routes/user"));
-app.use("api/problemset", require("./routes/problemset"));
-app.use("api/problem", require("./routes/problem"));
+app.use("/api/auth", require("./routes/auth"));
+app.use("/api/user", require("./routes/user"));
+app.use("/api/problemset", require("./routes/problemset"));
+app.use("/api/problem", require("./routes/problem"));
 
 // Connect to MongoDB
 const mongoose = require("mongoose");
