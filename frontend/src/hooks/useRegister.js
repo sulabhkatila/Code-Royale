@@ -27,7 +27,7 @@ export const useRegister = () => {
         dispatch({ type: "LOGIN", payload: data });
       }
     } catch (err) {
-      setError(err.message);
+      setError(err.error ? err.error : err.message);
     } finally {
       setLoading(false);
     }

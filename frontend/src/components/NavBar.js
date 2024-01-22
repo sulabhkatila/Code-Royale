@@ -62,6 +62,44 @@ export default function NavBar() {
     );
   }
 
+  function CollapsedPageNavigationDropdown() {
+    return (
+      <div
+            ref={navMenuRef}
+            className="absolute z-10 my-0 text-base bg-white divide-y divide-gray-100 rounded-lg shadow right-1 dark:bg-gray-700 dark:divide-gray-600"
+            style={{ top: `calc(100% + 0.25rem)` }}
+            id="nav-dropdown"
+          >
+            <ul className="py-2" aria-labelledby="nav-menu-button">
+              <li>
+                <Link
+                  to="/"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                >
+                  Practise
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                >
+                  Challange
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                >
+                  Friends
+                </Link>
+              </li>
+            </ul>
+          </div>
+    )
+  }
+
   function UserMenu() {
     return (
       <>
@@ -194,41 +232,7 @@ export default function NavBar() {
               />
             </svg>
           </button>
-          {isNavMenuOpen && (
-            <div
-            ref={navMenuRef}
-            className="absolute z-10 my-0 text-base bg-white divide-y divide-gray-100 rounded-lg shadow right-1 dark:bg-gray-700 dark:divide-gray-600"
-            style={{ top: `calc(100% + 0.25rem)` }}
-            id="nav-dropdown"
-          >
-            <ul className="py-2" aria-labelledby="nav-menu-button">
-              <li>
-                <Link
-                  to="/"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                >
-                  Practise
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                >
-                  Challange
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                >
-                  Friends
-                </Link>
-              </li>
-            </ul>
-          </div>
-          )}
+          {isNavMenuOpen && <CollapsedPageNavigationDropdown />}
         </div>
       </div>
     </nav>
