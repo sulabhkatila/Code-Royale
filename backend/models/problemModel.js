@@ -69,16 +69,13 @@ const problemSchema = new Schema(
 // Method to run the solution against the test cases
 problemSchema.methods.compareSolution = async function (language, solution) {
   function getLanguageId(language) {
-    switch (language.toLowerCase()) {
+    switch (language.trim().toLowerCase()) {
       case "python":
         return 92;
-        break
       case "javascript":
         return 93;
-        break
       default:
         return -1;
-        break
     }
   }
 
@@ -86,6 +83,41 @@ problemSchema.methods.compareSolution = async function (language, solution) {
   if (languageId === -1) {
     return { error: "Language not supported" };
   }
+
+  if (solution.trim() === "") {
+    throw new Error("Solution cannot be empty");
+  }
+
+  function getFileName() {
+    function getLanguageExtension(language) {
+      switch (language.trim().toLowerCase()) {
+        case "python":
+          return "py";
+        case "javascript":
+          return "js";
+        default:
+          return "";
+      }
+    }
+    // filename is the exaact same as problem.title except that '-' is '_'
+    return (this.title.replace(/-/g, "_") + getLanguageExtension(language));
+  }
+
+  const fs = require('fs')
+
+  fs.readFile(`../${language}/${getFileName()}`, 'utf8', function(err, driverCode) {
+    console.log("It is reading the file")
+    if (err) {
+      console.error(err)
+      throw new Error(`Tests not found`)
+    }
+    console.log(driverCode)
+  })
+
+  const data = {
+    language_id: languageId,
+    source_code: Buffer.from(solution, 'utf8').toString('base64') + driverCode,
+  };
 
   const url =
     "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&fields=*";
@@ -97,12 +129,7 @@ problemSchema.methods.compareSolution = async function (language, solution) {
       "X-RapidAPI-Key": process.env.X_RAPIDAPI_KEY,
       "X-RapidAPI-Host": process.env.X_RAPIDAPI_HOST,
     },
-    body: {
-      language_id: languageId,
-      source_code:
-        "I2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbih2b2lkKSB7CiAgY2hhciBuYW1lWzEwXTsKICBzY2FuZigiJXMiLCBuYW1lKTsKICBwcmludGYoImhlbGxvLCAlc1xuIiwgbmFtZSk7CiAgcmV0dXJuIDA7Cn0=",
-      stdin: "SnVkZ2Uw",
-    },
+    body: JSON.stringify(data),
   };
 
   try {
