@@ -1,8 +1,8 @@
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
-import { useLogout } from "../hooks/useLogout";
-import { useAuthContext } from "../hooks/useAuthContext";
 import logo from "../assets/logo.png";
+import { useAuthContext } from "../hooks/useAuthContext";
+import { useLogout } from "../hooks/useLogout";
 
 export default function NavBar() {
   const { user } = useAuthContext();
@@ -39,22 +39,17 @@ export default function NavBar() {
   };
 
   function PageNavigation() {
-    const navLinkClasses = "block px-3 py-2 text-white bg-transparent rounded md:p-0 hover:text-blue-400"
+    const navLinkClasses =
+      "block px-3 py-2 text-white bg-transparent rounded md:p-0 hover:text-blue-400";
     return (
       <ul className="flex flex-col p-4 mt-4 font-medium md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 bg-dark-1 md:p-0 ">
         <li>
-          <Link
-            to="/"
-            className={`${navLinkClasses}`}
-          >
+          <Link to="/" className={`${navLinkClasses}`}>
             Practise
           </Link>
         </li>
         <li>
-          <Link
-            to="/"
-            className={`${navLinkClasses}`}
-          >
+          <Link to="/challange" className={`${navLinkClasses}`}>
             Challenge
           </Link>
         </li>
@@ -65,39 +60,39 @@ export default function NavBar() {
   function CollapsedPageNavigationDropdown() {
     return (
       <div
-            ref={navMenuRef}
-            className="absolute z-10 my-0 text-base bg-white divide-y divide-gray-100 rounded-lg shadow right-1 dark:bg-gray-700 dark:divide-gray-600"
-            style={{ top: `calc(100% + 0.25rem)` }}
-            id="nav-dropdown"
-          >
-            <ul className="py-2" aria-labelledby="nav-menu-button">
-              <li>
-                <Link
-                  to="/"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                >
-                  Practise
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                >
-                  Challange
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                >
-                  Friends
-                </Link>
-              </li>
-            </ul>
-          </div>
-    )
+        ref={navMenuRef}
+        className="absolute z-10 my-0 text-base bg-white divide-y divide-gray-100 rounded-lg shadow right-1 dark:bg-gray-700 dark:divide-gray-600"
+        style={{ top: `calc(100% + 0.25rem)` }}
+        id="nav-dropdown"
+      >
+        <ul className="py-2" aria-labelledby="nav-menu-button">
+          <li>
+            <Link
+              to="/"
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+            >
+              Practise
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/challenge"
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+            >
+              Challange
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/"
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+            >
+              Friends
+            </Link>
+          </li>
+        </ul>
+      </div>
+    );
   }
 
   function UserMenu() {
@@ -109,10 +104,12 @@ export default function NavBar() {
             className="flex rounded-full text-md md:me-0 focus:ring-4 focus:ring-blue-400 dark:focus:ring-gray-600"
             id="user-menu-button"
             aria-expanded="false"
-            onClick={() => setIsUserMenuOpen(prevValue => !prevValue)}
+            onClick={() => setIsUserMenuOpen((prevValue) => !prevValue)}
           >
             <svg
-              className={`w-8 h-8 ${isUserMenuOpen ? "text-gold" : "text-white"} hover:text-gold`}
+              className={`w-8 h-8 ${
+                isUserMenuOpen ? "text-gold" : "text-white"
+              } hover:text-gold`}
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 22 22"
               fill="none"
@@ -214,7 +211,9 @@ export default function NavBar() {
           <button
             type="button"
             className="inline-flex items-center justify-center w-10 h-10 p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-            onClick={() => {setIsNavMenuOpen(prevValue => !prevValue)}}
+            onClick={() => {
+              setIsNavMenuOpen((prevValue) => !prevValue);
+            }}
           >
             <svg
               className="w-5 h-5"

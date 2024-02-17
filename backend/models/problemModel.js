@@ -45,7 +45,6 @@ const problemSchema = new Schema(
     example: {
       type: [[]], // ["input", "output", "explaination"]
       required: true,
-      default: [],
       validate: {
         validator: function (v) {
           return v.every((arr) => arr.length === 3);
@@ -53,18 +52,64 @@ const problemSchema = new Schema(
         message: (props) => `Each sub-array should contain exactly 3 elements`,
       },
     },
+    tests: {
+      type: [
+        {
+          input: { type: String, required: true },
+          expected_output: { type: String, required: true },
+        },
+      ],
+      required: true,
+    },
     boilerPlate: {
       type: Map,
       of: String,
       required: true,
     },
     notes: {
-      type: String,
+      type: [String],
       default: "",
     },
   },
   { timestamps: true }
 );
+
+problemSchema.methods.getDriverCode = async function (language) {
+  const problemName = this.name;
+
+  function getFileName(language) {
+    function getLanguageExtension(language) {
+      switch (language.trim().toLowerCase()) {
+        case "python":
+          return ".py";
+        default:
+          throw new Error("Language not supported");
+      }
+    }
+    // Filename is the exact same as problem.name except that '-' is '_'
+    return problemName.replace(/-/g, "_") + getLanguageExtension(language);
+  }
+
+  async function getCode(language) {
+    const fs = require("fs").promises;
+    const path = require("path");
+
+    try {
+      const driverCode = await fs.readFile(
+        path.join(
+          __dirname,
+          `../tests/${language.toLowerCase()}/${getFileName(language)}`
+        ),
+        "utf8"
+      );
+      return driverCode;
+    } catch (error) {
+      throw new Error(`Tests not found :: ${error.message}`);
+    }
+  }
+
+  return await getCode(language);
+};
 
 // Method to run the solution against the test cases
 problemSchema.methods.compareSolution = async function (language, solution) {
@@ -100,23 +145,27 @@ problemSchema.methods.compareSolution = async function (language, solution) {
       }
     }
     // filename is the exaact same as problem.title except that '-' is '_'
-    return (this.title.replace(/-/g, "_") + getLanguageExtension(language));
+    return this.title.replace(/-/g, "_") + getLanguageExtension(language);
   }
 
-  const fs = require('fs')
+  const fs = require("fs");
 
-  fs.readFile(`../${language}/${getFileName()}`, 'utf8', function(err, driverCode) {
-    console.log("It is reading the file")
-    if (err) {
-      console.error(err)
-      throw new Error(`Tests not found`)
+  fs.readFile(
+    `../${language}/${getFileName()}`,
+    "utf8",
+    function (err, driverCode) {
+      console.log("It is reading the file");
+      if (err) {
+        console.error(err);
+        throw new Error(`Tests not found`);
+      }
+      console.log(driverCode);
     }
-    console.log(driverCode)
-  })
+  );
 
   const data = {
     language_id: languageId,
-    source_code: Buffer.from(solution, 'utf8').toString('base64') + driverCode,
+    source_code: Buffer.from(solution, "utf8").toString("base64") + driverCode,
   };
 
   const url =

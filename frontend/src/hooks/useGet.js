@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const useGet = (url) => {
   const [data, setData] = useState(null);
@@ -12,11 +12,14 @@ const useGet = (url) => {
     const fetchData = async () => {
       try {
         const res = await fetch(url, { signal });
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
         const json = await res.json();
         setData(json);
       } catch (err) {
         if (err.name !== "AbortError") {
-            setError(err.message);
+          setError(err.message);
         }
       } finally {
         setLoading(false);

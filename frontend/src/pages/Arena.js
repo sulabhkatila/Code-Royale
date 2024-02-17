@@ -3,23 +3,27 @@ import Split from "react-split";
 import ProblemDescription from "../components/ProblemDescription";
 import WorkSpace from "../components/WorkSpace";
 import useGet from "../hooks/useGet";
-import { useEffect, useState } from "react";
-
-// I
-import problem1 from "../to_delete";
 
 export default function Arena() {
   const { problem: problemName } = useParams();
+  const { data: problem, loading, error } = useGet(`/api/problem/${problemName}`);
 
-  // I
-  const problem = problem1;
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-  return (
-    <div className="w-screen h-screen bg-dark">
-      <Split direction="horizontal" className="split" sizes={[50, 50]} minSize={0}>
-        <ProblemDescription problem={problem} />
-        <WorkSpace problem={problem} />        
-      </Split>
-    </div>
-  );
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+  
+  if (problem) {
+    return (
+      <div className="w-screen h-screen bg-dark">
+        <Split direction="horizontal" className="split" sizes={[50, 50]} minSize={0}>
+          <ProblemDescription problem={problem} />
+          <WorkSpace problem={problem} />        
+        </Split>
+      </div>
+    );
+  }
 }

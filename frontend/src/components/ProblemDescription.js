@@ -1,8 +1,4 @@
-import problem1 from "../to_delete";
-
 export default function ProblemDescription({ problem }) {
-  problem = problem1[0]; /////////////// I
-
   function getClassNamesForDifficulty(difficulty) {
     let difficultyClass =
       "inline-block rounded-[20px] bg-opacity-[.15] px-2.5 py-1 text-sm font-medium capitalize";
@@ -12,7 +8,7 @@ export default function ProblemDescription({ problem }) {
         difficultyClass += " bg-light-green text-light-green";
         break;
       case "medium":
-        difficultyClass += " bg-yellow-100 text-yellow-800";
+        difficultyClass += " bg-yellow-100 text-yellow-600";
         break;
       case "hard":
         difficultyClass += " bg-red-100 text-red-800";
@@ -84,16 +80,19 @@ export default function ProblemDescription({ problem }) {
         {problem.example.map((eg, index) => (
           <div key={index}>
             <div className="font-medium text-white ">Example {index + 1}: </div>
-            <div className="p-3 my-4 leading-7 text-gray-300 bg-gray-100 rounded-lg text-m bg-opacity-10">
-              <p>
-                <strong className="text-white">Input: </strong> <span className="pl-1">{eg[0]}</span>
+            <div className="px-5 py-3 my-4 leading-7 text-gray-300 bg-gray-100 rounded-lg text-m bg-opacity-10">
+              <p className="">
+                <strong className="text-white">Input: </strong>{" "}
+                <pre className="" dangerouslySetInnerHTML={{ __html: eg[0] }} />
               </p>
-              <p>
-                <strong className="text-white">Output:</strong> <span className="pl-1">{eg[1]}</span>
+              <p className="mt-2">
+                <strong className="text-white">Output:</strong>{" "}
+                <p className="">{eg[1]}</p>
               </p>
               {eg[2] && (
-                <p>
-                  <strong className="text-white">Explanation:</strong> <span className="pl-1">{eg[2]}</span>
+                <p className="mt-2">
+                  <strong className="text-white">Explanation:</strong>{" "}
+                  <p className="">{eg[2]}</p>
                 </p>
               )}
             </div>
@@ -111,11 +110,11 @@ export default function ProblemDescription({ problem }) {
 
       <ProblemExample problem={problem} />
 
-      <div className="pb-4 mx-5 my-8">
+      <div className="pb-4 mx-5 mb-5">
         <div className="font-medium text-white text-m">Note:</div>
         <ul className="ml-5 text-white list-disc ">
           {problem.notes.map((note, index) => (
-            <li key={index}>{note}</li>
+            <li key={index} dangerouslySetInnerHTML={{ __html: note }}></li>
           ))}
         </ul>
       </div>
