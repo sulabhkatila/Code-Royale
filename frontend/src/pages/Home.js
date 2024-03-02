@@ -1,9 +1,19 @@
 import NavBar from "../components/NavBar";
 import ProblemTable from "../components/ProblemTable";
 import useGet from "../hooks/useGet";
+import { useLocation } from "react-router-dom";
+
+const useQuery = () => {
+  return new URLSearchParams(useLocation().search);
+};
 
 export default function Home() {
-  const { data: problems, loading, error } = useGet("/api/problemset");
+  let query = useQuery();
+  const {
+    data: problems,
+    loading,
+    error,
+  } = useGet(`/api/problemset${query ? `?${query}` : ""}`);
 
   if (problems) {
     return (

@@ -4,26 +4,50 @@ const MAX_ITERATIONS = 5;
 const WAIT_PER_ITERATION = 1000;
 
 const getProblemSet = async (req, res) => {
-  const { difficulty, tags } = req.query;
+  let { difficulty, tags, status, keyword } = req.query;
   let query = {};
 
-  if (tags && difficulty) {
-    const tagsArr = tags.split(",");
-    query = {
-      difficulty: difficulty,
-      tags: { $all: tagsArr },
-    };
-  } else if (tags) {
-    const tagsArr = tags.split(",");
-    query = {
-      tags: { $all: tagsArr },
-    };
-  } else if (difficulty) {
-    query = {
-      difficulty: difficulty,
-    };
+  if (keyword) {
+    const keywords = keyword.toLowerCase().split(" ");
+    const keywordQueries = keywords.map((kw) => {
+      return {
+        $or: [
+          { name: { $regex: kw, $options: "i" } },
+          { title: { $regex: kw, $options: "i" } },
+          { description: { $regex: kw, $options: "i" } },
+        ],
+      };
+    });
+    query.$and = keywordQueries;
   }
 
+  if (status) {
+    status = status.toLowerCase();
+    if (status === "liked") {
+      query.likes = { $in: [req.user._id] };
+    } else if (status === "disliked") {
+      query.dislikes = { $in: [req.user._id] };
+    } else if (status === "unsolved") {
+      // to do mean the user has not solved the problem
+      // the solved problems is available in user model
+      // solved problems is in user.solvedProblems
+      console.log(req);
+      // query.name = { $nin: req.user.solvedProblems };
+    } else if (status === "solved") {
+      // query.name = { $in: req.user.solvedProblems };
+    }
+  }
+
+  if (difficulty) {
+    difficulty = difficulty.toLowerCase();
+    query.difficulty = difficulty;
+  }
+
+  if (tags) {
+    tags = tags.toLowerCase();
+    const tagsArr = tags.split(",");
+    query.tags = { $all: tagsArr };
+  }
   const problems = await Problem.find(query);
   res.json(problems);
 };
@@ -79,7 +103,6 @@ const deleteProblem = async (req, res) => {
 };
 
 const submitSolution = async (req, res) => {
-
   const getSubmission = async (url, options, iteration) => {
     if (iteration > MAX_ITERATIONS) {
       throw new Error("Submission timed out");
@@ -106,7 +129,6 @@ const submitSolution = async (req, res) => {
     return result;
   };
 
-
   function encode(code) {
     return Buffer.from(code).toString("base64");
   }
@@ -114,7 +136,7 @@ const submitSolution = async (req, res) => {
   function decode(code) {
     return Buffer.from(code, "base64").toString("utf-8");
   }
-  
+
   const problemName = req.body.problem;
   const language = req.body.language;
   const solution = req.body.solution;
@@ -134,7 +156,7 @@ const submitSolution = async (req, res) => {
   if (!problem) {
     return res.status(404).json({ message: "Problem not found" });
   }
-  
+
   const languageId = getLanguageId(language);
   if (languageId === -1) {
     return res.status(400).json({ message: "Language not supported" });
@@ -201,7 +223,6 @@ const submitSolution = async (req, res) => {
     const error = parsedResult.stderr ? decode(parsedResult.stderr) : null;
     parsedResult.stdout = output ? output.trim().split("\n") : null;
     parsedResult.stderr = error;
-    console.log("the parsed result is ", parsedResult);
 
     res.status(200).json(parsedResult);
   } catch (err) {

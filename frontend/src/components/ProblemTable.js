@@ -2,6 +2,7 @@ import { BsCheckCircle } from "react-icons/bs";
 import { FaRegCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useAuthContext } from "../hooks/useAuthContext";
+import SearchBar from "./SearchBar";
 
 export default function ProblemTable({ problems }) {
   const { user } = useAuthContext();
@@ -105,19 +106,14 @@ export default function ProblemTable({ problems }) {
 
   return (
     <div className="relative px-5 bg-dark-1 min-w-[900px] max-w-[1000px] font-mono">
-      <div className="flex flex-col items-center justify-center w-full mt-6 text-sm">
-        {/* TODO */}
-        <input
-          type="search"
-          className="hidden w-full py-3 mx-auto mb-4 text-black border-0 rounded-full px-7 bg-black-layer-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
-          placeholder="Search..."
-        />
+      <div className="w-full mb-6 text-sm mt-7">
+        <SearchBar />
       </div>
       <table className="w-full mx-auto text-base text-left border-collapse min-w-[400px] rounded-t-lg overflow-hidden">
         <ProblemTableHead />
         <tbody className="text-white">
           {problems.map((problem, index) => (
-            <ProblemRow problem={problem} index={index} />
+            <ProblemRow key={index} problem={problem} index={index} />
           ))}
         </tbody>
       </table>

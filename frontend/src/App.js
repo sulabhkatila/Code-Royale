@@ -8,6 +8,7 @@ import {
 import { useAuthContext } from "./hooks/useAuthContext";
 import Home from "./pages/Home";
 import Arena from "./pages/Arena";
+import Challange from "./pages/Challange";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
@@ -24,6 +25,7 @@ function App() {
           element={!user ? <Login /> : <Navigate to="/" />}
         />
         <Route path="/problem/:problem" element={<Arena />} />
+        <Route path="/challange" element={<Challange />} />
       </Routes>
     </Router>
   );

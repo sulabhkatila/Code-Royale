@@ -3,7 +3,7 @@
 ## Project Status
 In progress
 
-<img width="1467" alt="Screenshot 2024-01-11 at 12 48 03 AM" src="https://github.com/sulabhkatila/code-royale/assets/113466992/9bacb473-028c-456f-9ff8-2b02bad01618">
+<img width="1467" alt="Screenshot 2024-01-11 at 12 48 03 AM" src="https://i.imgur.com/000LK8S.jpg">
 
 ## Stack
 MERN Stack (MongoDB, Express.js, React.js, Node.js)

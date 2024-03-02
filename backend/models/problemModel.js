@@ -70,9 +70,25 @@ const problemSchema = new Schema(
       type: [String],
       default: "",
     },
+    solvedBy: {
+      type: [mongoose.SchemaTypes.ObjectId],
+      ref: "User",
+      default: [],
+    }
   },
   { timestamps: true }
 );
+
+problemSchema.methods.findProblemByKeyword = async function (keyword) {
+  const problem = await this.find({
+    $or: [
+      { name: { $regex: keyword, $options: "i" } },
+      { title: { $regex: keyword, $options: "i" } },
+      { description: { $regex: keyword, $options: "i" } },
+    ],
+  });
+  return problem;
+}
 
 problemSchema.methods.getDriverCode = async function (language) {
   const problemName = this.name;

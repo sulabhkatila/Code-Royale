@@ -122,7 +122,7 @@ export default function WorkSpace({ problem }) {
         </div>
         <div>
           {userOutput && (
-            <p>
+            <p className="w-full h-[30px] mx-2 flex items-center mt-2">
               Passed {passedTests}/{problem.tests.length}
             </p>
           )}
@@ -197,7 +197,7 @@ export default function WorkSpace({ problem }) {
     }
 
     function editCodeInEditor() {
-      // TOOO
+      // TODO
       // use in auto formatting option
       console.log(codeInEditor.current);
 

@@ -1,12 +1,13 @@
 def parse_input(input_str: str) -> str:
-    return int(input_str)
+    number = input_str.replace("x = ", "")
+    return int(number)
 
 
 def parse_output(output: int) -> str:
     return "true" if output else "false"
 
 # expected input
-# inputs = ["111", "123", "10", "-1"]
+# inputs = ["x = 111", "x = 123", "x = 10", "x = -1"]
 # output will be a string (true or false)
 solution = Solution()
 

@@ -22,6 +22,7 @@ export const useSubmit = () => {
       const response = await fetch("/api/problem/submit", {
         method: "POST",
         headers: {
+          "Authorization": `Bearer ${user.token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ problem, language, solution }),
@@ -35,9 +36,6 @@ export const useSubmit = () => {
         setData(data);
       }
     } catch (err) {
-      if (err.error) {
-        console.log('the err.error is ', err.error)
-      }
       setError(err.error ? err.error : err.message);
     } finally {
       setLoading(false);
