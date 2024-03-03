@@ -44,11 +44,6 @@ const userSchema = new Schema(
       ref: "Problem",
       default: [],
     },
-    friends: {
-      type: [mongoose.SchemaTypes.ObjectId],
-      ref: "User",
-      default: [],
-    },
   },
   {
     timestamps: true,

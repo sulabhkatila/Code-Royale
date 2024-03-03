@@ -12,19 +12,13 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/user", require("./routes/user"));
 app.use("/api/problemset", require("./routes/problemset"));
 app.use("/api/problem", require("./routes/problem"));
+app.use("/api/friend", require("./routes/friend"));
 
 // Connect to MongoDB
 const mongoose = require("mongoose");
 
 main().catch((err) => console.error(err));
 
-// main()
-// This is just to avaid the mongoose error for now
-// function main() {
-//   app.listen(process.env.PORT, () => {
-//     console.log(`Server is running on port: ${process.env.PORT}`);
-//   });
-// }
 
 async function main() {
   await mongoose.connect(process.env.MONGODB_URI, {
@@ -36,3 +30,13 @@ async function main() {
     console.log(`Server is running on port: ${port}`);
   });
 }
+
+// This is just to avaid the mongoose error 
+// when not connected to the database
+// main()
+
+// function main() {
+//   app.listen(process.env.PORT, () => {
+//     console.log(`Server is running on port: ${process.env.PORT}`);
+//   });
+// }
