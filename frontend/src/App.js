@@ -11,6 +11,7 @@ import Arena from "./pages/Arena";
 import Challange from "./pages/Challange";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import CreateRoom from "./pages/CreateRoom";
 
 function App() {
   const { user } = useAuthContext();
@@ -26,6 +27,7 @@ function App() {
         />
         <Route path="/problem/:problem" element={<Arena />} />
         <Route path="/challange" element={<Challange />} />
+        <Route path="/room/new" element={<CreateRoom />} />
       </Routes>
     </Router>
   );
