@@ -37,7 +37,7 @@ export default function LoginForm() {
     <div className="flex items-center justify-center h-screen font-mono text-white bg-dark-1">
       <div className="">
         <div className="relative p-8 border rounded-lg shadow-lg bg-slate-800 border-slate-400 backdrop-filter backdrop-blur-sm bg-opacity-30 ">
-          <h2 className="mb-6 text-4xl text-center text-whitefont-bold">
+          <h2 className="mb-6 text-4xl font-bold text-center text-white">
             Login
           </h2>
           <form action="" onSubmit={handleLogin}>

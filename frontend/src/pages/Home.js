@@ -1,7 +1,10 @@
+import { useLocation } from "react-router-dom";
+import ChallangeForm from "../components/ChallangeForm";
 import NavBar from "../components/NavBar";
 import ProblemTable from "../components/ProblemTable";
 import useGet from "../hooks/useGet";
-import { useLocation } from "react-router-dom";
+
+import problem1 from "../to_delete";
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -13,13 +16,20 @@ export default function Home() {
     data: problems,
     loading,
     error,
-  } = useGet(`/api/problemset${query ? `?${query}` : ""}`);
+  } = /*useGet(`/api/problemset${query ? `?${query}` : ""}`);*/ {
+    data: problem1,
+    loading: false,
+    error: null,
+  };
 
   if (problems) {
     return (
       <div className="h-screen bg-dark-1">
         <NavBar />
-        <ProblemTable problems={problems} />
+        <div className="flex flex-row justify-between">
+          <ProblemTable problems={problems} />
+          <ChallangeForm />
+        </div>
       </div>
     );
   }
