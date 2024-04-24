@@ -1,7 +1,5 @@
-import { useAuthContext } from "../hooks/useAuthContext";
-import useGet from "../hooks/useGet";
-import usePost from "../hooks/usePost";
 import { Link } from "react-router-dom";
+import { useAuthContext } from "../../hooks/useAuthContext";
 
 export default function ChallangeForm() {
   const { user } = useAuthContext();
@@ -21,7 +19,6 @@ export default function ChallangeForm() {
       error: invitationError,
     } = { data: "invitationData", error: false, loading: false }; //usePost("/api/invite", { email });
 
-    console.log(invitationData);
   };
 
   return (

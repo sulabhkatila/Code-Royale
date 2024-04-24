@@ -1,8 +1,7 @@
 import { useLocation } from "react-router-dom";
-import ChallangeForm from "../components/ChallangeForm";
+import ChallangeForm from "../components/Cards/ChallangeCard";
 import NavBar from "../components/NavBar";
 import ProblemTable from "../components/ProblemTable";
-import useGet from "../hooks/useGet";
 
 import problem1 from "../to_delete";
 
