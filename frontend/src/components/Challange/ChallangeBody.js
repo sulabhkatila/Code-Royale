@@ -22,7 +22,7 @@ export default function ChallengeBody() {
 
   const isUserOnline = (user) => {
     // Add logic to determine if the user is online
-    return;
+    return true;
   };
 
   return (
@@ -42,7 +42,7 @@ export default function ChallengeBody() {
                   <div className="w-12 h-12 bg-gray-400 rounded-full"></div>
                   <div className="ml-4">
                     <div className="text-lg font-bold">{friend.name}</div>
-                    <div className="text-xs">Online</div>
+                    <div className="text-xs">{isUserOnline(friend) ? "Online" : "Offline"}</div>
                   </div>
                 </div>
                 <div className="flex items-center">
