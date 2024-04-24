@@ -38,7 +38,7 @@ export default function ChallangeHeader() {
       </form>
 
       {searchRoom && (
-        <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-gray-600 bg-opacity-60">
+        <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-gray-600 bg-opacity-60 z-[100]">
           <div className="relative border-2 rounded-3xl h-[60vh] w-[80vw] bg-dark-2">
             <button
               onClick={toggleSearchRoom}
@@ -114,7 +114,7 @@ export default function ChallangeHeader() {
         </button>
       </div>
       {createRoom && (
-        <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-gray-600 bg-opacity-60">
+        <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-gray-600 bg-opacity-60 z-[100]">
           <div className="relative border-2 rounded-3xl h-[60vh] w-[80vw] bg-dark-2">
             <button
               onClick={toggleCreateRoom}
