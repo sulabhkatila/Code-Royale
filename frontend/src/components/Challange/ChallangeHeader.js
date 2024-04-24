@@ -199,7 +199,7 @@ export default function ChallangeHeader() {
               </div>
               <button
                 onClick={``}
-                className="flex items-center justify-center p-2 text-white bg-blue-500 rounded-lg h-[50px] hover:bg-blue-700 transition-colors duration-200 px-3"
+                className="flex items-center justify-center p-2 text-white bg-green-500 rounded-lg h-[50px] hover:bg-blue-700 transition-colors duration-200 px-3"
               >
                 <span className="">Create Room</span>
               </button>
