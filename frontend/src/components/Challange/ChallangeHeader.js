@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FiEye, FiEyeOff, FiSearch } from "react-icons/fi";
 
 export default function ChallangeHeader() {
+  const [searchRoomID, setSearchRoomID] = useState("");
   const [searchRoom, setSearchRoom] = useState("");
   const [showPasswordForSearchRoom, setShowPasswordForSearchRoom] =
     useState(false);
@@ -33,6 +34,7 @@ export default function ChallangeHeader() {
       >
         <input
           placeholder="Enter room id"
+          onChange={(e) => setSearchRoomID(e.target.value)}
           className={`p-1 overflow-x-auto bg-gray-600 rounded-xl w-full h-[50px] px-7 mr-7`}
         />
       </form>
@@ -57,6 +59,7 @@ export default function ChallangeHeader() {
                     <input
                       id="roomId"
                       className="ml-4 px-5 h-[40px] bg-gray-600 rounded-lg w-[40vw]"
+                      value={searchRoomID}
                     />
                   </div>
                   <div className="flex items-center">
