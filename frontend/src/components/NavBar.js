@@ -53,6 +53,11 @@ export default function NavBar() {
             Challange
           </Link>
         </li>
+        <li>
+          <Link to="/rooms" className={`${navLinkClasses}`}>
+            Rooms
+          </Link>
+        </li>
       </ul>
     );
   }
@@ -80,6 +85,14 @@ export default function NavBar() {
               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
             >
               Challange
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/rooms"
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+            >
+              Rooms
             </Link>
           </li>
           <li>
