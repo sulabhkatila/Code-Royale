@@ -138,7 +138,7 @@ export default function NavBar() {
         ) : (
           <Link
             to="/accounts/login"
-            className="text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+            className="p-1 text-sm text-white rounded-full bg-dark-2 md:me-0 ring-1 hover:ring-2 hover:ring-gray-300 dark:focus:ring-gray-600"
           >
             Sign in
           </Link>

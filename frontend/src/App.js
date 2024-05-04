@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import CreateRoom from "./pages/CreateRoom";
 import Rooms from "./pages/Rooms";
+import Room from "./pages/Room";
 
 function App() {
   const { user } = useAuthContext();
@@ -23,6 +24,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/challange" element={<Challange />} />
         <Route path="/rooms" element={<Rooms />} />
+        <Route path="/room/:room" element={<Room />} />
         <Route path="/accounts/register" element={<Register />} />
         <Route
           path="/accounts/login"

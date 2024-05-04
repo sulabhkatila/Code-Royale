@@ -2,6 +2,7 @@
 import { useState } from "react";
 import NavBar from "../components/NavBar";
 import Simplesearchbar from "../components/Simplesearchbar";
+import { Link } from "react-router-dom";
 
 export default function Rooms() {
   const [selected, setSelected] = useState("active-rooms");
@@ -67,9 +68,10 @@ export default function Rooms() {
             {selected === "active-rooms" ? (
               <div className="overflow-y-auto">
                 {getActiveRooms().map((room, index) => (
-                  <div
+                  <Link
                     key={index}
                     className="flex items-center justify-between p-4 bg-dark-1"
+                    to={`/room/${room}`}
                   >
                     <div className="flex items-center">
                       <div className="w-12 h-12 bg-gray-400 rounded-full"></div>
@@ -83,7 +85,7 @@ export default function Rooms() {
                       <div className="w-8 h-8 bg-gray-400 rounded-full"></div>
                       <div className="w-8 h-8 bg-gray-400 rounded-full"></div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             ) : selected === "room-invitations" ? (

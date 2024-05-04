@@ -40,6 +40,7 @@ export default function LoginForm() {
           <h2 className="mb-6 text-4xl font-bold text-center text-white">
             Login
           </h2>
+          {error && <p className="text-red-500">{error}</p>}
           <form action="" onSubmit={handleLogin}>
             <div className="relative my-4">
               <input

@@ -3,16 +3,18 @@ const router = express.Router();
 const User = require("../models/userModel");
 const requireAuth = require("../middleware/requireAuth");
 const {
-  inviteFriend,
-  addFriend,
+  inviteFriendEmail,
+  sendFriendRequest,
   deleteFriend,
-  getFriends,
+  acceptFriendRequest,
 } = require("../controllers/friendController");
 
-router.post("/invite", requireAuth, inviteFriend);
+router.post("/invite", requireAuth, inviteFriendEmail);
 
-router.post("/add", requireAuth, addFriend);
+router.post("/add", requireAuth, sendFriendRequest);
 
 router.delete("/delete", requireAuth, deleteFriend);
 
-router.get("/all", requireAuth, getFriends);
+router.get("/all", requireAuth, acceptFriendRequest);
+
+module.exports = router;
