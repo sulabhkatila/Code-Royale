@@ -14,10 +14,12 @@
     "react-router-dom": "^6.21.1",
     "react-scripts": "5.0.1",
     "react-split": "^2.0.14",
+    "socket.io-client": "^4.7.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "dev": "NODE_ENV=development react-scripts start",
+    "start": "NODE_ENV=production react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

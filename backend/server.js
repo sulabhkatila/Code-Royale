@@ -3,7 +3,6 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 
-
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -20,15 +19,29 @@ const mongoose = require("mongoose");
 
 main().catch((err) => console.error(err));
 
-
 async function main() {
   await mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
   const port = process.env.PORT || 5000;
-  app.listen(port, () => {
+  const server = app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
+  });
+
+  const io = require("socket.io")(server, {
+    pingTimeout: 60000,
+    cors: {
+      origin: "*",
+    },
+  });
+  
+  io.on("connection", (socket) => {
+    console.log("User connected via socket", socket.id);
+  
+    socket.on("disconnect", () => {
+      console.log("User disconnected", socket.id);
+    });
   });
 }
 
