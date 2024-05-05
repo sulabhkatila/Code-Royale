@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuthContext } from "../../hooks/useAuthContext";
 
-export default function ChallangeForm() {
+export default function ChallangeCard() {
   const { user } = useAuthContext();
   const {
     data: friendsData,
@@ -22,7 +22,7 @@ export default function ChallangeForm() {
   };
 
   return (
-    <div className="w-full h-[320px] mx-6 mt-7 font-mono border rounded-2xl shadow-xl bg-slate-800 text-white border-slate-400 backdrop-filter backdrop-blur-md bg-opacity-70">
+    <div className="max-w-full h-[320px] mx-6 mt-7 font-mono border rounded-2xl shadow-xl bg-slate-800 text-white border-slate-400 backdrop-filter backdrop-blur-md bg-opacity-70">
       <h3 className="justify-center font-blod h-[60px] flex items-center">
         Friends
       </h3>

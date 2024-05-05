@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuthContext } from "../hooks/useAuthContext";
 import SearchBar from "./SearchBar";
 
-export default function ProblemTable({ problems }) {
+export default function ProblemTable({ problems, showDifficulty }) {
   const { user } = useAuthContext();
 
   function getClassNamesForIndex(index) {
@@ -50,12 +50,11 @@ export default function ProblemTable({ problems }) {
           <th scope="col" className={`${thClass} max-w-[200px]`}>
             Title
           </th>
-          <th scope="col" className={`${thClass} max-w-[200px] text-center`}>
-            Difficulty
-          </th>
-          <th scope="col" className={`${thClass} max-w-[200px] text-center`}>
-            Challange
-          </th>
+          {showDifficulty && (
+            <th scope="col" className={`${thClass} max-w-[200px] text-center`}>
+              Difficulty
+            </th>
+          )}
         </tr>
       </thead>
     );
@@ -92,20 +91,21 @@ export default function ProblemTable({ problems }) {
             {problem.title}
           </Link>
         </td>
-        <td className={`${tdClass} text-center`}>
-          <div className={`${getClassNamesForDifficulty(problem.difficulty)}`}>
-            {problem.difficulty}
-          </div>
-        </td>
-        <td className={`${tdClass}`}>
-          <Link to="/" />
-        </td>
+        {showDifficulty && (
+          <td className={`${tdClass} text-center`}>
+            <div
+              className={`${getClassNamesForDifficulty(problem.difficulty)}`}
+            >
+              {problem.difficulty}
+            </div>
+          </td>
+        )}
       </tr>
     );
   }
 
   return (
-    <div className="relative px-5 bg-dark-1 min-w-[900px] max-w-[1000px] font-mono">
+    <div className="relative w-full px-5 font-mono bg-dark-1">
       <div className="w-full mb-6 text-sm mt-7">
         <SearchBar />
       </div>

@@ -153,7 +153,7 @@ export default function SearchBar() {
     "inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white";
   return (
     <div className="flex flex-col">
-      <form className="mx-5" onSubmit={handleKeywordSearch}>
+      <form className="mx-1" onSubmit={handleKeywordSearch}>
         <div className="flex">
           <div ref={tagsDropdownRef} className="relative inline-block">
             <button
