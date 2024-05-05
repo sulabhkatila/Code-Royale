@@ -1,9 +1,9 @@
 import MonacoEditor from "@monaco-editor/react";
 import { useEffect, useRef, useState } from "react";
 import Split from "react-split";
-import { useSubmit } from "../hooks/useSubmit";
+import { useSubmit } from "../../hooks/useSubmit";
 
-export default function WorkSpace({ problem }) {
+export default function CodeArena({ problem }) {
   // We get ResizeObserver loop completed with undelivered notifications error
   // when resizing the split window to a certain extent
   // This error is benign and can be ignored
