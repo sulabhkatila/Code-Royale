@@ -218,13 +218,36 @@ const submitSolution = async (req, res) => {
     );
     const parsedResult = JSON.parse(submissionResult);
 
-    // compare the stdout with the expected output
+    // Compare the stdout with the expected output
     const output = parsedResult.stdout ? decode(parsedResult.stdout) : null;
     const error = parsedResult.stderr ? decode(parsedResult.stderr) : null;
     parsedResult.stdout = output ? output.trim().split("\n") : null;
     parsedResult.stderr = error;
 
     res.status(200).json(parsedResult);
+
+    // Check if the output is correct mark it solved if it is
+    const expectedOutput = problem.tests.map((test) => test.expected_output);
+
+    function arraysAreEqual(arr1, arr2) {
+      if (arr1.length !== arr2.length) {
+        console.log("Lengths are not equal");
+        return false;
+      }
+      for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) {
+          console.log("Outputs are not equal");
+          return false;
+        }
+      }
+      return true;
+    }
+
+    if (arraysAreEqual(parsedResult.stdout, expectedOutput)) {
+      // add the problem to the user's solved problems
+      const user = req.user;
+      await user.addSolvedProblem(problem._id);
+    }
   } catch (err) {
     console.error(err);
     res

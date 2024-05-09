@@ -6,6 +6,7 @@ def parse_input(input_str: str) -> str:
 def parse_output(output: int) -> str:
     return "true" if output else "false"
 
+
 # expected input
 # inputs = ["x = 111", "x = 123", "x = 10", "x = -1"]
 # output will be a string (true or false)

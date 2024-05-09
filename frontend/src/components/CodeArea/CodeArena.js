@@ -42,6 +42,7 @@ export default function CodeArena({ problem }) {
     if (language === "Python") {
       const inputs = problem.tests.map((test) => test.input);
       solution += `\n\ninputs = ${JSON.stringify(inputs)}\n`;
+      console.log(inputs); ////
     }
     console.log(solution);
     await submit(problem.name, language, solution);

@@ -106,4 +106,16 @@ userSchema.statics.login = async function (username, password) {
   }
 };
 
+// add a method to the userSchema to add a problem to the user's solved problems
+userSchema.methods.addSolvedProblem = async function (problemId) {
+  if (!this.problemsSolved) {
+    this.problemsSolved = [problemId];
+    await this.save();
+  }
+  else if (!this.problemsSolved.includes(problemId)) {
+    this.problemsSolved.push(problemId);
+    await this.save();
+  }
+};
+
 module.exports = mongoose.model("User", userSchema);
