@@ -20,11 +20,11 @@ export default function Profile() {
           {data ? (<Profileinfo profileUser={data} />) : (<>loading ...</>)}
         </div>
         <div>
-            {user.user.username === username ? (
+            {user.user ? (user.user.username === username ? (
                 <button> Edit Profile </button>
             ) : (
                 <button> Follow </button>
-            )}
+            )) : null}
         </div>
       </div>
     </div>
