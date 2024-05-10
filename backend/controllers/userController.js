@@ -45,4 +45,12 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+const getUserByUsername = async (username) => {
+  const user = await User.findOne({
+    username: username,
+  });
+
+  return user;
+}
+
+module.exports = { registerUser, loginUser, getUserByUsername };

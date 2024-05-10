@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useAuthContext } from "./useAuthContext";
 
-export const useGet = (url) => {
+export const useGet = (url, credentials = false) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const user = useAuthContext();
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -11,7 +13,18 @@ export const useGet = (url) => {
 
     const fetchData = async () => {
       try {
-        const res = await fetch(url, { signal });
+        let res;
+
+        if (credentials) {
+          res = await fetch(url, {
+            signal,
+            headers: {
+              "Authorization": `Bearer ${user.token}`,
+            },
+          });
+        } else {
+          res = await fetch(url, { signal });
+        }
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }

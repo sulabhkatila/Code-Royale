@@ -14,6 +14,7 @@ import Register from "./pages/Register";
 import CreateRoom from "./pages/CreateRoom";
 import Rooms from "./pages/Rooms";
 import Room from "./pages/Room";
+import Profile from "./pages/Profile";
 
 function App() {
   const { user } = useAuthContext();
@@ -32,6 +33,7 @@ function App() {
         />
         <Route path="/problem/:problem" element={<Arena />} />
         <Route path="/room/new" element={<CreateRoom />} />
+        <Route path="/:username" element={<Profile />} />
       </Routes>
     </Router>
   );
