@@ -3,6 +3,7 @@ import Profileinfo from "../components/Profile/Profileinfo";
 import Profilepic from "../components/Profile/Profilepic";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useGet } from "../hooks/useGet";
+import FriendRequestButton from "../components/Profile/FriendRequestButton";
 
 export default function Profile() {
   const { username } = useParams();
@@ -23,7 +24,7 @@ export default function Profile() {
             {user.user ? (user.user.username === username ? (
                 <button> Edit Profile </button>
             ) : (
-                <button> Follow </button>
+                <FriendRequestButton user={user} profileUser={data} task={0} />
             )) : null}
         </div>
       </div>
