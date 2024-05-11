@@ -1,4 +1,5 @@
 const User = require("../models/userModel");
+const Friends = require("../models/friendsModel");
 const jwt = require("jsonwebtoken");
 
 const createToken = (_id) => {
@@ -45,11 +46,21 @@ const loginUser = async (req, res) => {
   }
 };
 
-const getUserByUsername = async (username) => {
-  const user = await User.findOne({
-    username: username,
-  });
+const getUserByUsername = async (req, res) => {
+  const username = req.params.username;
 
+  try {
+    const user = await User.findOne({
+      username: username,
+    });
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).send("Server Error");
+  }
+  
   return user;
 }
 

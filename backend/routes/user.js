@@ -2,19 +2,6 @@ const express = require("express");
 const router = express.Router();
 const { getUserByUsername } = require("../controllers/userController");
 
-router.get("/:username", async (req, res) => {
-  const username = req.params.username;
-
-  try {
-    const user = await getUserByUsername(username);
-    if (!user) {
-      return res.status(404).send("User not found");
-    }
-    res.status(200).json(user);
-  } catch (err) {
-    res.status(500).send("Server Error");
-  }
-
-});
+router.get("/:username", getUserByUsername);
 
 module.exports = router;
