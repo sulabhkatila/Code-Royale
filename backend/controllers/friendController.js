@@ -2,7 +2,7 @@ const User = require("../models/userModel");
 const Friends = require("../models/friendsModel");
 const nodemailer = require("nodemailer");
 
-// Send frined request
+// Send friend request
 const sendFriendRequest = async (req, res) => {
   const { userId } = req.user;
   const { receiverEmail } = req.body;
@@ -75,6 +75,9 @@ const acceptFriendRequest = async (req, res) => {
 
   return res.status(200).json({ message: "Friend request accepted" });
 };
+
+// Reject friend request
+////
 
 // Delete friend
 const deleteFriend = async (req, res) => {

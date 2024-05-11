@@ -5,7 +5,7 @@ export const useGet = (url, credentials = false) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const user = useAuthContext();
+  const { user } = useAuthContext();
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -20,6 +20,7 @@ export const useGet = (url, credentials = false) => {
             signal,
             headers: {
               "Authorization": `Bearer ${user.token}`,
+              "Content-Type": "application/json",
             },
           });
         } else {

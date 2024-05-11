@@ -60,8 +60,26 @@ const getUserByUsername = async (req, res) => {
   } catch (err) {
     res.status(500).send("Server Error");
   }
-  
-  return user;
-}
+};
 
-module.exports = { registerUser, loginUser, getUserByUsername };
+const getUserFriendsAndRequests = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.user.userId });
+    const friends = await Friends.find({ user: user._id });
+
+    if (!friends) {
+      return res.status(404).send("Friends not found");
+    } else {
+      return res.status(200).json({ user, friends });
+    }
+  } catch (err) {
+    res.status(500).send("Server Error");
+  }
+};
+
+module.exports = {
+  registerUser,
+  loginUser,
+  getUserByUsername,
+  getUserFriendsAndRequests,
+};
