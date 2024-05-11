@@ -64,7 +64,8 @@ const getUserByUsername = async (req, res) => {
 
 const getUserFriendsAndRequests = async (req, res) => {
   try {
-    const user = await User.findOne({ _id: req.user.userId });
+    const username = req.params.username;
+    const user = await User.findOne({ username });
     const friends = await Friends.find({ user: user._id });
 
     if (!friends) {

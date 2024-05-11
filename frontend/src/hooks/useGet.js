@@ -45,7 +45,7 @@ export const useGet = (url, credentials = false) => {
     return () => {
       abortController.abort();
     };
-  }, [url]);
+  }, [url, user]);
 
   return { data, loading, error };
 };
