@@ -4,18 +4,29 @@ const nodemailer = require("nodemailer");
 
 // Send friend request
 const sendFriendRequest = async (req, res) => {
-  const { userId } = req.user;
-  const { receiverEmail } = req.body;
-  const [user, receiver] = await Promise.all([
-    User.findOne({ _id: userId }),
-    User.findOne({ email: receiverEmail }),
-  ]);
+  const user = req.user;
+  const receiverUsername = req.body.receiverUsername;
+  console.log(req.body);
+  const receiver = await User.findOne({ username: receiverUsername });
 
   if (!user || !receiver) {
     return res.status(403).json({ message: "User does not exist" });
   }
 
-  const [userFriends, receiverFriends] = await Promise.all([
+  let [userFriends, receiverFriends] = await Promise.all([
+    Friends.findOne({ user: user._id }),
+    Friends.findOne({ user: receiver._id }),
+  ]);
+
+  if (!userFriends) {
+    await Friends.create({ user: user._id });
+  }
+
+  if (!receiverFriends) {
+    await Friends.create({ user: receiver._id });
+  }
+
+  [userFriends, receiverFriends] = await Promise.all([
     Friends.findOne({ user: user._id }),
     Friends.findOne({ user: receiver._id }),
   ]);
@@ -24,69 +35,140 @@ const sendFriendRequest = async (req, res) => {
     return res.status(403).json({ message: "You are already friends" });
   }
 
-  if (receiverFriends.friendRequestsIn.includes(receiver._id)) {
+  if (receiverFriends.friendRequestsIn.includes(user._id)) {
     return res.status(403).json({ message: "Friend request already sent" });
   }
 
-  receiverFriends.friendRequestsIn.push(receiver._id);
-  userFriends.friendRequestsOut.push(user._id);
+  receiverFriends.friendRequestsIn.push(user._id);
+  userFriends.friendRequestsOut.push(receiver._id);
 
   await Promise.all([userFriends.save(), receiverFriends.save()]);
 
   return res.status(200).json({ message: "Friend request sent" });
 };
 
+const cancelFriendRequest = async (req, res) => {
+  const user = req.user;
+  const { receiverUsername } = req.body;
+
+  try {
+    const receiver = await User.findOne({ username: receiverUsername });
+
+    if (!user || !receiver) {
+      return res.status(403).json({ message: "User does not exist" });
+    }
+
+    const [userFriends, receiverFriends] = await Promise.all([
+      Friends.findOne({ user: user._id }),
+      Friends.findOne({ user: receiver._id }),
+    ]);
+
+    if (!userFriends.friendRequestsOut.includes(receiver._id)) {
+      return res.status(403).json({ message: "No friend request found" });
+    }
+
+    userFriends.friendRequestsOut = userFriends.friendRequestsOut.filter(
+      (friend) => friend !== receiver._id
+    );
+
+    receiverFriends.friendRequestsIn = receiverFriends.friendRequestsIn.filter(
+      (friend) => friend !== user._id
+    );
+
+    await Promise.all([userFriends.save(), receiverFriends.save()]);
+    return res.status(200).json({ message: "Friend request cancelled" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 // Accept friend request
 const acceptFriendRequest = async (req, res) => {
-  const { userId } = req.user;
-  const { senderId } = req.body;
-  const [user, sender] = await Promise.all([
-    User.findOne({ _id: userId }),
-    User.findOne({ _id: senderId }),
-  ]);
+  const user = req.user;
+  const { senderUsername } = req.body;
 
-  if (!user || !sender) {
-    return res.status(403).json({ message: "User does not exist" });
+  try {
+    const sender = await User.findOne({ username: senderUsername });
+
+    if (!user || !sender) {
+      return res.status(403).json({ message: "User does not exist" });
+    }
+
+    const [userFriends, senderFriends] = await Promise.all([
+      Friends.findOne({ user: user._id }),
+      Friends.findOne({ user: sender._id }),
+    ]);
+
+    if (userFriends.friends.includes(sender._id)) {
+      return res.status(403).json({ message: "You are already friends" });
+    }
+
+    if (!userFriends.friendRequestsIn.includes(sender._id)) {
+      return res.status(403).json({ message: "No friend request found" });
+    }
+
+    userFriends.friends.push(sender._id);
+    senderFriends.friends.push(user._id);
+    userFriends.friendRequestsIn = userFriends.friendRequestsIn.filter(
+      (friend) => friend !== sender._id
+    );
+    senderFriends.friendRequestsOut = senderFriends.friendRequestsOut.filter(
+      (friend) => friend !== user._id
+    );
+
+    await Promise.all([userFriends.save(), senderFriends.save()]);
+
+    return res.status(200).json({ message: "Friend request accepted" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "Server error" });
   }
-
-  const [userFriends, senderFriends] = await Promise.all([
-    Friends.findOne({ user: user._id }),
-    Friends.findOne({ user: sender._id }),
-  ]);
-
-  if (userFriends.friends.includes(sender._id)) {
-    return res.status(403).json({ message: "You are already friends" });
-  }
-
-  if (!userFriends.friendRequestsIn.includes(sender._id)) {
-    return res.status(403).json({ message: "No friend request found" });
-  }
-
-  userFriends.friends.push(sender._id);
-  senderFriends.friends.push(user._id);
-  userFriends.friendRequestsIn = userFriends.friendRequestsIn.filter(
-    (friend) => friend !== sender._id
-  );
-  senderFriends.friendRequestsOut = senderFriends.friendRequestsOut.filter(
-    (friend) => friend !== user._id
-  );
-
-  await Promise.all([userFriends.save(), senderFriends.save()]);
-
-  return res.status(200).json({ message: "Friend request accepted" });
 };
 
 // Reject friend request
-////
+const rejectFriendRequest = async (req, res) => {
+  const user = req.user;
+  const { senderUsername } = req.body;
+
+  try {
+    const sender = await User.findOne({ username: senderUsername });
+
+    if (!user || !sender) {
+      return res.status(403).json({ message: "User does not exist" });
+    }
+
+    const [userFriends, senderFriends] = await Promise.all([
+      Friends.findOne({ user: user._id }),
+      Friends.findOne({ user: sender._id }),
+    ]);
+
+    if (!userFriends.friendRequestsIn.includes(sender._id)) {
+      return res.status(403).json({ message: "No friend request found" });
+    }
+
+    // remove from the list
+    userFriends.friendRequestsIn = userFriends.friendRequestsIn.filter(
+      (friend) => friend !== sender._id
+    );
+
+    senderFriends.friendRequestsOut = senderFriends.friendRequestsOut.filter(
+      (friend) => friend !== user._id
+    );
+
+    await Promise.all([userFriends.save(), senderFriends.save()]);
+    return res.status(200).json({ message: "Friend request rejected" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
 
 // Delete friend
 const deleteFriend = async (req, res) => {
-  const { userId } = req.user;
+  const user = req.user;
   const { friendId } = req.body;
-  const [user, friend] = await Promise.all([
-    User.findOne({ _id: userId }),
-    User.findOne({ _id: friendId }),
-  ]);
+  const friend = await User.findOne({ _id: friendId });
 
   if (!user || !friend) {
     return res.status(403).json({ message: "User does not exist" });
@@ -164,9 +246,31 @@ const inviteFriendEmail = async (req, res) => {
   sendEmail(email, subject, message);
 };
 
+const showAllFriends = async (req, res) => {
+  const { userId } = req.user;
+  const userFriends = await Friends.findOne({ user: userId }).populate(
+    "friends"
+  );
+
+  return res.status(200).json({ friends: userFriends.friends });
+};
+
+const showAllRequests = async (req, res) => {
+  const { userId } = req.user;
+  const userFriends = await Friends.findOne({ user: userId }).populate(
+    "friendRequestsIn"
+  );
+
+  return res.status(200).json({ friendRequests: userFriends.friendRequestsIn });
+};
+
 module.exports = {
   inviteFriendEmail,
   sendFriendRequest,
+  cancelFriendRequest,
   acceptFriendRequest,
+  rejectFriendRequest,
   deleteFriend,
+  showAllFriends,
+  showAllRequests,
 };

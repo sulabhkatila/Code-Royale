@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const bcrypt = require("bcrypt");
+const Friends = require("./friendsModel");
 
 const userSchema = new Schema(
   {
@@ -55,6 +56,12 @@ userSchema.pre("save", function (next) {
   if (this.isModified("password")) {
     this.password = bcrypt.hashSync(this.password, 10);
   }
+  next();
+});
+
+// Create an entry in the friends collection for the new user
+userSchema.post("save", async function (doc, next) {
+  await Friends.create({ user: doc._id });
   next();
 });
 

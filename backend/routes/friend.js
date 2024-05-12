@@ -7,6 +7,8 @@ const {
   sendFriendRequest,
   deleteFriend,
   acceptFriendRequest,
+  showAllFriends,
+  showAllRequests,
 } = require("../controllers/friendController");
 
 router.post("/invite", requireAuth, inviteFriendEmail);
@@ -15,6 +17,10 @@ router.post("/add", requireAuth, sendFriendRequest);
 
 router.delete("/delete", requireAuth, deleteFriend);
 
-router.get("/all", requireAuth, acceptFriendRequest);
+router.post("/accept", requireAuth, acceptFriendRequest);
+
+router.get("/all", requireAuth, showAllFriends);
+
+router.get("/requests", requireAuth, showAllRequests);
 
 module.exports = router;
