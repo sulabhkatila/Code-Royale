@@ -22,7 +22,7 @@ export default function Profile() {
     data: userwithfriends,
     loading: ufloading,
     error: uferror,
-  } = useGet(`/api/user/friendsandrequests/${username}`, true);
+  } = useGet(`/api/user/friendsandrequests/`, true);
 
   const [friends, setFriends] = useState([]);
   const [friendRequestsIn, setFriendRequestsIn] = useState([]);
@@ -30,13 +30,12 @@ export default function Profile() {
 
   useEffect(() => {
     if (userwithfriends) {
-      console.log(userwithfriends);
-      const existingFriends = userwithfriends.friends;
+      const existingFriends = userwithfriends.friends.friends;
       if (existingFriends) setFriends(existingFriends);
       if (userwithfriends.friendRequestsIn)
-        setFriendRequestsIn(userwithfriends.friendRequestsIn);
+        setFriendRequestsIn(userwithfriends.friends.friendRequestsIn);
       if (userwithfriends.friendRequestsOut)
-        setFriendRequestsOut(userwithfriends.friendRequestsOut);
+        setFriendRequestsOut(userwithfriends.friends.friendRequestsOut);
     }
   }, [userwithfriends]);
 
@@ -52,9 +51,23 @@ export default function Profile() {
           )}
         </div>
         <div>
-          {user ? (
+          {user && profileUser ? (
             user.username === username ? (
               <button> Edit Profile </button>
+            ) : friends.includes(profileUser._id) ? (
+              <button>Already Friends</button>
+            ) : friendRequestsIn.includes(profileUser._id) ? (
+              <FriendRequestButton
+                user={user}
+                profileUser={profileUser}
+                task={2}
+              />
+            ) : friendRequestsOut.includes(profileUser._id) ? (
+              <FriendRequestButton
+                user={user}
+                profileUser={profileUser}
+                task={1}
+              />
             ) : (
               <FriendRequestButton
                 user={user}

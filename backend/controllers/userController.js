@@ -64,9 +64,9 @@ const getUserByUsername = async (req, res) => {
 
 const getUserFriendsAndRequests = async (req, res) => {
   try {
-    const username = req.params.username;
-    const user = await User.findOne({ username });
-    const friends = await Friends.find({ user: user._id });
+    const user = req.user;
+    const friends = await Friends.findOne({ user: user._id });
+    console.log("this is friends ", friends);
 
     if (!friends) {
       return res.status(404).send("Friends not found");

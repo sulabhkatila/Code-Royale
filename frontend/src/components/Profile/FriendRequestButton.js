@@ -18,7 +18,7 @@ export default function FriendRequestButton({ user, profileUser, task }) {
     }
 
     try {
-      const res = await fetch(`/api/friend/${profileUser._id}`, {
+      const res = await fetch(`/api/friend/${profileUser.username}`, {
         method: method,
         headers: {
           "Authorization": `Bearer ${user.token}`,

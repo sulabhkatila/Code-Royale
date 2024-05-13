@@ -7,7 +7,7 @@ const {
 const requireAuth = require("../middleware/requireAuth");
 
 router.get(
-  "/friendsandrequests/:username",
+  "/friendsandrequests",
   requireAuth,
   getUserFriendsAndRequests
 );
