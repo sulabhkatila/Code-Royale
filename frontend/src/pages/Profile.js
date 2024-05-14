@@ -32,9 +32,9 @@ export default function Profile() {
     if (userwithfriends) {
       const existingFriends = userwithfriends.friends.friends;
       if (existingFriends) setFriends(existingFriends);
-      if (userwithfriends.friendRequestsIn)
+      if (userwithfriends.friends.friendRequestsIn)
         setFriendRequestsIn(userwithfriends.friends.friendRequestsIn);
-      if (userwithfriends.friendRequestsOut)
+      if (userwithfriends.friends.friendRequestsOut)
         setFriendRequestsOut(userwithfriends.friends.friendRequestsOut);
     }
   }, [userwithfriends]);
@@ -50,18 +50,38 @@ export default function Profile() {
             <>loading ...</>
           )}
         </div>
-        <div>
+        <div className="">
           {user && profileUser ? (
             user.username === username ? (
               <button> Edit Profile </button>
             ) : friends.includes(profileUser._id) ? (
-              <button>Already Friends</button>
-            ) : friendRequestsIn.includes(profileUser._id) ? (
+              <div className="flex items-center justify-between w-[200px]">
+                <button>Already Friends</button>
+                <FriendRequestButton
+                  user={user}
+                  profileUser={profileUser}
+                  task={4}
+                />{" "}
+              </div>
+            ) : friendRequestsOut.includes(profileUser._id) ? (
               <FriendRequestButton
                 user={user}
                 profileUser={profileUser}
-                task={2}
+                task={1}
               />
+            ) : friendRequestsIn.includes(profileUser._id) ? (
+              <>
+                <FriendRequestButton
+                  user={user}
+                  profileUser={profileUser}
+                  task={2}
+                />
+                <FriendRequestButton
+                  user={user}
+                  profileUser={profileUser}
+                  task={3}
+                />
+              </>
             ) : friendRequestsOut.includes(profileUser._id) ? (
               <FriendRequestButton
                 user={user}

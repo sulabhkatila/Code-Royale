@@ -3,21 +3,25 @@ const router = express.Router();
 const User = require("../models/userModel");
 const requireAuth = require("../middleware/requireAuth");
 const {
-  inviteFriendEmail,
   sendFriendRequest,
-  deleteFriend,
+  cancelFriendRequest,
+  rejectFriendRequest,
   acceptFriendRequest,
+  deleteFriend,
+  inviteFriendEmail,
   showAllFriends,
-  showAllRequests,
+  showAllRequests
 } = require("../controllers/friendController");
 
-router.post("/invite", requireAuth, inviteFriendEmail);
-
+// add, cancel, reject, accept, and delete
 router.post("/add", requireAuth, sendFriendRequest);
-
+router.delete("/cancel", requireAuth, cancelFriendRequest);
+router.post("/reject", requireAuth, rejectFriendRequest);
+router.post("/accept", requireAuth, acceptFriendRequest);
 router.delete("/delete", requireAuth, deleteFriend);
 
-router.post("/accept", requireAuth, acceptFriendRequest);
+
+router.post("/invite", requireAuth, inviteFriendEmail);
 
 router.get("/all", requireAuth, showAllFriends);
 

@@ -66,7 +66,6 @@ const getUserFriendsAndRequests = async (req, res) => {
   try {
     const user = req.user;
     const friends = await Friends.findOne({ user: user._id });
-    console.log("this is friends ", friends);
 
     if (!friends) {
       return res.status(404).send("Friends not found");

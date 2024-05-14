@@ -6,7 +6,6 @@ const nodemailer = require("nodemailer");
 const sendFriendRequest = async (req, res) => {
   const user = req.user;
   const receiverUsername = req.body.receiverUsername;
-  console.log(req.body);
   const receiver = await User.findOne({ username: receiverUsername });
 
   if (!user || !receiver) {
@@ -14,19 +13,6 @@ const sendFriendRequest = async (req, res) => {
   }
 
   let [userFriends, receiverFriends] = await Promise.all([
-    Friends.findOne({ user: user._id }),
-    Friends.findOne({ user: receiver._id }),
-  ]);
-
-  if (!userFriends) {
-    await Friends.create({ user: user._id });
-  }
-
-  if (!receiverFriends) {
-    await Friends.create({ user: receiver._id });
-  }
-
-  [userFriends, receiverFriends] = await Promise.all([
     Friends.findOne({ user: user._id }),
     Friends.findOne({ user: receiver._id }),
   ]);
@@ -49,7 +35,7 @@ const sendFriendRequest = async (req, res) => {
 
 const cancelFriendRequest = async (req, res) => {
   const user = req.user;
-  const { receiverUsername } = req.body;
+  const receiverUsername = req.body.receiverUsername;
 
   try {
     const receiver = await User.findOne({ username: receiverUsername });
@@ -67,15 +53,14 @@ const cancelFriendRequest = async (req, res) => {
       return res.status(403).json({ message: "No friend request found" });
     }
 
-    userFriends.friendRequestsOut = userFriends.friendRequestsOut.filter(
-      (friend) => friend !== receiver._id
-    );
-
-    receiverFriends.friendRequestsIn = receiverFriends.friendRequestsIn.filter(
-      (friend) => friend !== user._id
-    );
+    console.log(userFriends.friendRequestsOut.indexOf(receiver._id));
+    const userIndex = userFriends.friendRequestsOut.indexOf(receiver._id);
+    userFriends.friendRequestsOut.splice(userIndex, 1);
+    const receiverIndex = receiverFriends.friendRequestsIn.indexOf(user._id);
+    receiverFriends.friendRequestsIn.splice(receiverIndex, 1);
 
     await Promise.all([userFriends.save(), receiverFriends.save()]);
+
     return res.status(200).json({ message: "Friend request cancelled" });
   } catch (err) {
     console.log(err);
