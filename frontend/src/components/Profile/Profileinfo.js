@@ -4,14 +4,13 @@ export default function Profileinfo({ profileUser }) {
 
   return (
     <div className="flex-col w-full h-full">
-        <div className="text-center">
-            {username}
-        </div>
-      <div className="flex items-center justify-center h-full text-white">
-        <div className="flex-col">
+      <div className="flex flex-col h-[100px] justify-center items-center text-xl">
+        <div className="my-5">{username}</div>
+        
+      </div>
+      <div className="flex justify-center my-2">
           <div>{name}</div>
         </div>
-      </div>
     </div>
   );
 }

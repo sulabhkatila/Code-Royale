@@ -5,6 +5,7 @@ import Profileinfo from "../components/Profile/Profileinfo";
 import Profilepic from "../components/Profile/Profilepic";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useGet } from "../hooks/useGet";
+import NavBar from "../components/NavBar";
 
 export default function Profile() {
   const { username } = useParams();
@@ -40,8 +41,11 @@ export default function Profile() {
   }, [userwithfriends]);
 
   return (
-    <div className="w-screen h-screen text-white bg-dark-1">
-      <div className="flex flex-col items-center justify-between w-full h-full">
+    <div className="w-screen h-screen font-mono text-white bg-dark-1">
+      <div className="flex flex-col w-full h-full">
+      <NavBar />
+
+      <div className="flex flex-col items-center justify-between w-full h-full my-5">
         <Profilepic />
         <div className="w-full h-full overflow-auto">
           {profileUser ? (
@@ -70,7 +74,7 @@ export default function Profile() {
                 task={1}
               />
             ) : friendRequestsIn.includes(profileUser._id) ? (
-              <>
+              <div className="flex flex-row justify-between w-[500px]">
                 <FriendRequestButton
                   user={user}
                   profileUser={profileUser}
@@ -81,7 +85,7 @@ export default function Profile() {
                   profileUser={profileUser}
                   task={3}
                 />
-              </>
+              </div>
             ) : friendRequestsOut.includes(profileUser._id) ? (
               <FriendRequestButton
                 user={user}
@@ -98,6 +102,8 @@ export default function Profile() {
           ) : null}
         </div>
       </div>
+      </div>
+      
     </div>
   );
 }

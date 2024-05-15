@@ -4,7 +4,6 @@ export default function FriendRequestButton({ user, profileUser, task }) {
   // task = 2: accept friend request url -> accept
   // task = 3: reject friend request (that was received) url -> reject
   // task = 4: remove friend (that was accepted) url -> delete
-
   const handleFriendRequest = async () => {
     let method;
     let url = `/api/friend/`;
@@ -49,7 +48,7 @@ export default function FriendRequestButton({ user, profileUser, task }) {
         body: JSON.stringify(bodyData),
       });
       if (!res.ok) {
-        console.log(await res.json())
+        console.log(await res.json());
         throw new Error(`HTTP error! status: ${res.status}`);
       }
       const json = await res.json();
@@ -58,18 +57,22 @@ export default function FriendRequestButton({ user, profileUser, task }) {
     }
   };
 
+  let bgColor = "bg-blue";
+  if (task === 1 || task === 3 || task === 4) bgColor = "bg-red";
   return (
-    <button onClick={handleFriendRequest}>
-      {" "}
+    <button
+      onClick={handleFriendRequest}
+      className={`px-4 py-2 font-bold text-white ${bgColor}-500 rounded hover:${bgColor}-700`}
+    >
       {task === 0
         ? "Send Request"
         : task === 1
         ? "Cancel Request"
         : task === 2
-        ? "Acceept Invitation"
+        ? "✔ Confirm "
         : task === 3
-        ? "Reject Invitation"
-        : "Remove Friend"}{" "}
+        ? "X Reject "
+        : "Remove Friend"}
     </button>
   );
 }
