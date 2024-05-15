@@ -23,7 +23,7 @@ router.delete("/delete", requireAuth, deleteFriend);
 
 router.post("/invite", requireAuth, inviteFriendEmail);
 
-router.get("/all", requireAuth, showAllFriends);
+router.get("/all/:username", showAllFriends);
 
 router.get("/requests", requireAuth, showAllRequests);
 

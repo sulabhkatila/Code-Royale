@@ -5,7 +5,7 @@ const nodemailer = require("nodemailer");
 // Send friend request
 const sendFriendRequest = async (req, res) => {
   const user = req.user;
-  const receiverUsername = req.body.receiverUsername;
+  const receiverUsername = req.body.profileUsername;
   const receiver = await User.findOne({ username: receiverUsername });
 
   if (!user || !receiver) {
@@ -33,9 +33,10 @@ const sendFriendRequest = async (req, res) => {
   return res.status(200).json({ message: "Friend request sent" });
 };
 
+// Cancel friend request
 const cancelFriendRequest = async (req, res) => {
   const user = req.user;
-  const receiverUsername = req.body.receiverUsername;
+  const receiverUsername = req.body.profileUsername;
 
   try {
     const receiver = await User.findOne({ username: receiverUsername });
@@ -53,7 +54,6 @@ const cancelFriendRequest = async (req, res) => {
       return res.status(403).json({ message: "No friend request found" });
     }
 
-    console.log(userFriends.friendRequestsOut.indexOf(receiver._id));
     const userIndex = userFriends.friendRequestsOut.indexOf(receiver._id);
     userFriends.friendRequestsOut.splice(userIndex, 1);
     const receiverIndex = receiverFriends.friendRequestsIn.indexOf(user._id);
@@ -71,7 +71,7 @@ const cancelFriendRequest = async (req, res) => {
 // Accept friend request
 const acceptFriendRequest = async (req, res) => {
   const user = req.user;
-  const { senderUsername } = req.body;
+  const senderUsername = req.body.profileUsername;
 
   try {
     const sender = await User.findOne({ username: senderUsername });
@@ -95,12 +95,11 @@ const acceptFriendRequest = async (req, res) => {
 
     userFriends.friends.push(sender._id);
     senderFriends.friends.push(user._id);
-    userFriends.friendRequestsIn = userFriends.friendRequestsIn.filter(
-      (friend) => friend !== sender._id
-    );
-    senderFriends.friendRequestsOut = senderFriends.friendRequestsOut.filter(
-      (friend) => friend !== user._id
-    );
+
+    const senderIndex = userFriends.friendRequestsIn.indexOf(sender._id);
+    userFriends.friendRequestsIn.splice(senderIndex, 1);
+    const userIndex = senderFriends.friendRequestsOut.indexOf(user._id);
+    senderFriends.friendRequestsOut.splice(userIndex, 1);
 
     await Promise.all([userFriends.save(), senderFriends.save()]);
 
@@ -114,7 +113,7 @@ const acceptFriendRequest = async (req, res) => {
 // Reject friend request
 const rejectFriendRequest = async (req, res) => {
   const user = req.user;
-  const { senderUsername } = req.body;
+  const senderUsername = req.body.profileUsername;
 
   try {
     const sender = await User.findOne({ username: senderUsername });
@@ -133,13 +132,10 @@ const rejectFriendRequest = async (req, res) => {
     }
 
     // remove from the list
-    userFriends.friendRequestsIn = userFriends.friendRequestsIn.filter(
-      (friend) => friend !== sender._id
-    );
-
-    senderFriends.friendRequestsOut = senderFriends.friendRequestsOut.filter(
-      (friend) => friend !== user._id
-    );
+    const userIndex = userFriends.friendRequestsIn.indexOf(sender._id);
+    userFriends.friendRequestsIn.splice(userIndex, 1);
+    const senderIndex = senderFriends.friendRequestsOut.indexOf(user._id);
+    senderFriends.friendRequestsOut.splice(senderIndex, 1);
 
     await Promise.all([userFriends.save(), senderFriends.save()]);
     return res.status(200).json({ message: "Friend request rejected" });
@@ -152,8 +148,9 @@ const rejectFriendRequest = async (req, res) => {
 // Delete friend
 const deleteFriend = async (req, res) => {
   const user = req.user;
-  const { friendId } = req.body;
-  const friend = await User.findOne({ _id: friendId });
+  const friendUsername = req.body.profileUsername;
+  const friend_ = await User.findOne({ username: friendUsername });
+  const friend = await User.findOne({ _id: friend_._id });
 
   if (!user || !friend) {
     return res.status(403).json({ message: "User does not exist" });
@@ -168,12 +165,11 @@ const deleteFriend = async (req, res) => {
     return res.status(403).json({ message: "You are not friends" });
   }
 
-  userFriends.friends = userFriends.friends.filter(
-    (friend) => friend !== friend._id
-  );
-  friendFriends.friends = friendFriends.friends.filter(
-    (friend) => friend !== user._id
-  );
+  const userIndex = userFriends.friends.indexOf(friend._id);
+  userFriends.friends.splice(userIndex, 1);
+
+  const friendIndex = friendFriends.friends.indexOf(user._id);
+  friendFriends.friends.splice(friendIndex, 1);
 
   await Promise.all([userFriends.save(), friendFriends.save()]);
 
@@ -231,18 +227,21 @@ const inviteFriendEmail = async (req, res) => {
   sendEmail(email, subject, message);
 };
 
+// Show all friends
 const showAllFriends = async (req, res) => {
-  const { userId } = req.user;
-  const userFriends = await Friends.findOne({ user: userId }).populate(
+  const { username } = req.params;
+  const user = await User.findOne({ username });
+  const userFriends = await Friends.findOne({ user: user._id }).populate(
     "friends"
   );
 
   return res.status(200).json({ friends: userFriends.friends });
 };
 
+// Show all friend requests
 const showAllRequests = async (req, res) => {
-  const { userId } = req.user;
-  const userFriends = await Friends.findOne({ user: userId }).populate(
+  const user = req.user;
+  const userFriends = await Friends.findOne({ user: user._id }).populate(
     "friendRequestsIn"
   );
 

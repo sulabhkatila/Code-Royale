@@ -22,20 +22,20 @@ export default function Profile() {
     data: userwithfriends,
     loading: ufloading,
     error: uferror,
-  } = useGet(`/api/user/friendsandrequests/`, true);
+  } = useGet(`/api/user/friendsandrequests`, true);
 
   const [friends, setFriends] = useState([]);
   const [friendRequestsIn, setFriendRequestsIn] = useState([]);
   const [friendRequestsOut, setFriendRequestsOut] = useState([]);
 
   useEffect(() => {
-    if (userwithfriends) {
-      const existingFriends = userwithfriends.friends.friends;
-      if (existingFriends) setFriends(existingFriends);
-      if (userwithfriends.friends.friendRequestsIn)
-        setFriendRequestsIn(userwithfriends.friends.friendRequestsIn);
-      if (userwithfriends.friends.friendRequestsOut)
-        setFriendRequestsOut(userwithfriends.friends.friendRequestsOut);
+    if (userwithfriends && userwithfriends.friends) {
+      const { friends, friendRequestsIn, friendRequestsOut } =
+        userwithfriends.friends;
+
+      if (friends) setFriends(friends);
+      if (friendRequestsIn) setFriendRequestsIn(friendRequestsIn);
+      if (friendRequestsOut) setFriendRequestsOut(friendRequestsOut);
     }
   }, [userwithfriends]);
 

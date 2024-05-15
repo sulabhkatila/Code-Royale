@@ -36,7 +36,7 @@ export default function FriendRequestButton({ user, profileUser, task }) {
     }
 
     const bodyData = {
-      receiverUsername: profileUser.username,
+      profileUsername: profileUser.username,
     };
 
     try {
