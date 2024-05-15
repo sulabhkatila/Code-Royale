@@ -1,10 +1,15 @@
-export default function FriendRequestButton({ user, profileUser, task }) {
+export default function FriendRequestButton({ user, profileUser, task, onClic = null }) {
   // task = 0: send friend request url-> add
   // task = 1: cancel friend request (that was sent) url-> cancel
   // task = 2: accept friend request url -> accept
   // task = 3: reject friend request (that was received) url -> reject
   // task = 4: remove friend (that was accepted) url -> delete
+
   const handleFriendRequest = async () => {
+    if (onClic) {
+      onClic();
+    }
+    
     let method;
     let url = `/api/friend/`;
 

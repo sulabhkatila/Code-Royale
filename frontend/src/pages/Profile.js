@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import NavBar from "../components/NavBar";
 import FriendRequestButton from "../components/Profile/FriendRequestButton";
 import Profileinfo from "../components/Profile/Profileinfo";
 import Profilepic from "../components/Profile/Profilepic";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useGet } from "../hooks/useGet";
-import NavBar from "../components/NavBar";
 
 export default function Profile() {
   const { username } = useParams();
@@ -29,6 +29,10 @@ export default function Profile() {
   const [friendRequestsIn, setFriendRequestsIn] = useState([]);
   const [friendRequestsOut, setFriendRequestsOut] = useState([]);
 
+  const [showSendFR, setShowSendFR] = useState(false);
+  const [showCancelFR, setShowCancelFR] = useState(false);
+  const [showAcceptReject, setShowAcceptReject] = useState(false);
+
   useEffect(() => {
     if (userwithfriends && userwithfriends.friends) {
       const { friends, friendRequestsIn, friendRequestsOut } =
@@ -37,73 +41,112 @@ export default function Profile() {
       if (friends) setFriends(friends);
       if (friendRequestsIn) setFriendRequestsIn(friendRequestsIn);
       if (friendRequestsOut) setFriendRequestsOut(friendRequestsOut);
+
+      if (user.username === username) {
+        setShowSendFR(false);
+        setShowCancelFR(false);
+        setShowAcceptReject(false);
+      } else if (friends.includes(profileUser._id)) {
+        setShowSendFR(false);
+        setShowCancelFR(false);
+        setShowAcceptReject(false);
+      } else if (friendRequestsOut.includes(profileUser._id)) {
+        setShowSendFR(false);
+        setShowCancelFR(true);
+        setShowAcceptReject(false);
+      } else if (friendRequestsIn.includes(profileUser._id)) {
+        setShowSendFR(false);
+        setShowCancelFR(false);
+        setShowAcceptReject(true);
+      } else {
+        setShowSendFR(true);
+        setShowCancelFR(false);
+        setShowAcceptReject(false);
+      }
     }
   }, [userwithfriends]);
+
+  const acceptFR = () => {
+    setShowAcceptReject(false);
+  };
+  const rejectFR = () => {
+    setShowAcceptReject(false);
+    setShowSendFR(true);
+  };
+  const removeFriend = () => {
+    setShowSendFR(true);
+  };
+  const sendFR = () => {
+    setShowSendFR(false);
+    setShowCancelFR(true);
+  };
+  const cancelFR = () => {
+    setShowCancelFR(false);
+    setShowSendFR(true);
+  };
 
   return (
     <div className="w-screen h-screen font-mono text-white bg-dark-1">
       <div className="flex flex-col w-full h-full">
-      <NavBar />
+        <NavBar />
 
-      <div className="flex flex-col items-center justify-between w-full h-full my-5">
-        <Profilepic />
-        <div className="w-full h-full overflow-auto">
-          {profileUser ? (
-            <Profileinfo profileUser={profileUser} />
-          ) : (
-            <>loading ...</>
-          )}
-        </div>
-        <div className="">
-          {user && profileUser ? (
-            user.username === username ? (
-              <button> Edit Profile </button>
-            ) : friends.includes(profileUser._id) ? (
-              <div className="flex items-center justify-between w-[200px]">
-                <button>Already Friends</button>
-                <FriendRequestButton
-                  user={user}
-                  profileUser={profileUser}
-                  task={4}
-                />{" "}
-              </div>
-            ) : friendRequestsOut.includes(profileUser._id) ? (
+        <div className="flex flex-col items-center justify-between w-full h-full my-5">
+          <Profilepic />
+          <div className="w-full h-full overflow-auto">
+            {profileUser ? (
+              <Profileinfo profileUser={profileUser} />
+            ) : error ? (
+              <>Error {{ error }}</>
+            ) : (
+              <>loading ...</>
+            )}
+          </div>
+          <div className="">
+            {user && user.username === username ? (
+              <>Edit Profile</>
+            ) : showSendFR ? (
+              <FriendRequestButton
+                user={user}
+                profileUser={profileUser}
+                task={0}
+                onClic={sendFR}
+              />
+            ) : showCancelFR ? (
               <FriendRequestButton
                 user={user}
                 profileUser={profileUser}
                 task={1}
+                onClic={cancelFR}
               />
-            ) : friendRequestsIn.includes(profileUser._id) ? (
+            ) : showAcceptReject ? (
               <div className="flex flex-row justify-between w-[500px]">
                 <FriendRequestButton
                   user={user}
                   profileUser={profileUser}
                   task={2}
+                  onClic={acceptFR}
                 />
                 <FriendRequestButton
                   user={user}
                   profileUser={profileUser}
                   task={3}
+                  onClic={rejectFR}
                 />
               </div>
-            ) : friendRequestsOut.includes(profileUser._id) ? (
-              <FriendRequestButton
-                user={user}
-                profileUser={profileUser}
-                task={1}
-              />
             ) : (
-              <FriendRequestButton
-                user={user}
-                profileUser={profileUser}
-                task={0}
-              />
-            )
-          ) : null}
+              <div className="flex flex-row justify-between w-[500px]">
+                <button>Already Friends</button>
+                <FriendRequestButton
+                  user={user}
+                  profileUser={profileUser}
+                  task={4}
+                  onClic={removeFriend}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
-      </div>
-      
     </div>
   );
 }
