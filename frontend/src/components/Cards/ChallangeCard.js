@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuthContext } from "../../hooks/useAuthContext";
+import { useGet } from "../../hooks/useGet";
 
 export default function ChallangeCard() {
   const { user } = useAuthContext();
@@ -7,18 +8,17 @@ export default function ChallangeCard() {
     data: friendsData,
     loading: friendsLoading,
     error: friendsError,
-  } = { data: [{ name: "name1" }], error: false, loading: false }; //useGet("/api/friends");
+  } = useGet("/api/friend/all/" + user.username, false);
 
   const sendInvitationToANewUser = (e) => {
     e.preventDefault();
 
     const email = e.target[0].value;
-    const {
-      data: invitationData,
-      loading: invitationLoading,
-      error: invitationError,
-    } = { data: "invitationData", error: false, loading: false }; //usePost("/api/invite", { email });
-
+    // const {
+    //   data: invitationData,
+    //   loading: invitationLoading,
+    //   error: invitationError,
+    // } = usePost("/api/invite", { email }, user.token);
   };
 
   return (
@@ -28,15 +28,15 @@ export default function ChallangeCard() {
       </h3>
       {/* sticky */}
       <div className="h-[220px] overflow-x-hidden overflow-y-auto">
-        {friendsData ? (
+        {friendsData && friendsData.friends.length > 0 ? (
           <>
-            {friendsData.map((friend, index) => (
-              <Link to="" className="flex items-center justify-between p-4">
+            {friendsData.friends.map((friend, index) => (
+              <Link to="" key={index} className="flex items-center justify-between p-4">
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gray-400 rounded-full"></div>
                   <div className="ml-4">
-                    <div className="text-lg font-bold">{friend.name}</div>
-                    <div className="text-sm">Online</div>
+                    <div className="text-lg font-bold">{friend.username}</div>
+                    <div className="text-sm">Online?</div>
                   </div>
                 </div>
                 <div className="flex items-center">
@@ -47,6 +47,8 @@ export default function ChallangeCard() {
               </Link>
             ))}
           </>
+        ) : friendsData ? (
+          <div className="flex items-center justify-center h-full text-white"></div>
         ) : (
           <div className="flex items-center justify-center h-full text-white">
             <button className="flex items-center justify-center p-2 px-3 border rounded-lg">

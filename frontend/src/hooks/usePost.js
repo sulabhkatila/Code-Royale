@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
-const usePost = (url, body, authorization) => {
+export const usePost = (url, body, authorization) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -17,7 +17,7 @@ const usePost = (url, body, authorization) => {
         const res = await fetch(url, {
           method: "POST",
           headers: {
-            ...(authorization && { "Authorization": `Bearer ${authorization}` }),
+            ...(authorization && { Authorization: `Bearer ${authorization}` }),
             "Content-Type": "application/json",
           },
           body: JSON.stringify(body),
@@ -49,5 +49,3 @@ const usePost = (url, body, authorization) => {
 
   return { data, loading, error };
 };
-
-export default usePost;
