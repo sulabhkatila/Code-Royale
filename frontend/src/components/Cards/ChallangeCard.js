@@ -10,14 +10,7 @@ export default function ChallangeCard() {
     error: friendsError,
   } = useGet("/api/friend/all/" + user.username, false);
 
-  const urlforsendingInvitation = "/api/invite";
-
-  // let body = {}
-  // const {
-  //   data: invitationData,
-  //   loading: invitationLoading,
-  //   error: invitationError,
-  // } = usePost("/api/invite", body, user);
+  const urlforsendingInvitation = "/api/friend/invite";
 
   const sendInvitationToANewUser = (e) => {
     e.preventDefault();

@@ -204,7 +204,7 @@ const inviteFriendEmail = async (req, res) => {
     });
   };
 
-  const { userId } = req.user;
+  const userId = req.user;
   const { email } = req.body;
 
   const [user, receiverUser] = await Promise.all([
