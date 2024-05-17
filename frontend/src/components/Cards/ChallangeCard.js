@@ -10,15 +10,47 @@ export default function ChallangeCard() {
     error: friendsError,
   } = useGet("/api/friend/all/" + user.username, false);
 
+  const urlforsendingInvitation = "/api/invite";
+
+  // let body = {}
+  // const {
+  //   data: invitationData,
+  //   loading: invitationLoading,
+  //   error: invitationError,
+  // } = usePost("/api/invite", body, user);
+
   const sendInvitationToANewUser = (e) => {
     e.preventDefault();
 
+    console.log(e.target[0].value);
     const email = e.target[0].value;
-    // const {
-    //   data: invitationData,
-    //   loading: invitationLoading,
-    //   error: invitationError,
-    // } = usePost("/api/invite", { email }, user.token);
+    const authorization = user ? user.token : null;
+
+    const fetchData = async () => {
+      try {
+        const res = await fetch(urlforsendingInvitation, {
+          method: "POST",
+          headers: {
+            ...(authorization && {
+              Authorization: `Bearer ${authorization}`,
+            }),
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        });
+
+        if (!res.ok) {
+          return;
+        }
+
+        const json = await res.json();
+        console.log("the email was sent ", json);
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
+
+    fetchData();
   };
 
   return (
@@ -31,7 +63,11 @@ export default function ChallangeCard() {
         {friendsData && friendsData.friends.length > 0 ? (
           <>
             {friendsData.friends.map((friend, index) => (
-              <Link to="" key={index} className="flex items-center justify-between p-4">
+              <Link
+                to=""
+                key={index}
+                className="flex items-center justify-between p-4"
+              >
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gray-400 rounded-full"></div>
                   <div className="ml-4">
