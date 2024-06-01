@@ -135,13 +135,15 @@ export default function Profile() {
               </div>
             ) : (
               <div className="flex flex-row justify-between w-[500px]">
-                <button>Already Friends</button>
                 <FriendRequestButton
                   user={user}
                   profileUser={profileUser}
                   task={4}
                   onClic={removeFriend}
                 />
+                <button className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">
+                  Message
+                </button>
               </div>
             )}
           </div>

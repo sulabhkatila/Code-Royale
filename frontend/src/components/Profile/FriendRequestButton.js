@@ -77,7 +77,7 @@ export default function FriendRequestButton({ user, profileUser, task, onClic = 
         ? "✔ Confirm "
         : task === 3
         ? "X Reject "
-        : "Remove Friend"}
+        : "Remove"}
     </button>
   );
 }
