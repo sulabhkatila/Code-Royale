@@ -1,23 +1,52 @@
-import "./App.css";
 import {
+  Navigate,
+  Route,
   BrowserRouter as Router,
   Routes,
-  Route,
-  Navigate,
 } from "react-router-dom";
+import "./App.css";
 import { useAuthContext } from "./hooks/useAuthContext";
-import Home from "./pages/Home";
 import Arena from "./pages/Arena";
 import Challange from "./pages/Challange";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
 import CreateRoom from "./pages/CreateRoom";
-import Rooms from "./pages/Rooms";
-import Room from "./pages/Room";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
 import Profile from "./pages/Profile";
+import Register from "./pages/Register";
+import Room from "./pages/Room";
+import Rooms from "./pages/Rooms";
+import { socket } from "./socket";
+import { useEffect, useState } from "react";
 
 function App() {
   const { user } = useAuthContext();
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [fooEvents, setFooEvents] = useState([]);
+
+  useEffect(() => {
+    function onConnect() {
+      setIsConnected(true);
+      console.log("Connected to socket<><><>");
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    function receive(value) {
+      console.log("Received message: ", value);
+    }
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("message", receive);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("message", receive);
+    };
+  }, []);
 
   return (
     <Router>

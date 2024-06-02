@@ -103,6 +103,16 @@ export default function Profile() {
     setShowChatBox(val);
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const message = e.target[0].value;
+    console.log("the message is",message);
+    const to = username;
+    console.log("the message is going to",to);
+    socket.emit("sendMessage", { message, to });
+    e.target[0].value = "";
+  }
+  
   return (
     <div className="w-screen h-screen font-mono text-white bg-dark-1">
       <div className="flex flex-col w-full h-full">
@@ -179,7 +189,7 @@ export default function Profile() {
                           </button>
                         </nav>
                         <div className="flex flex-col overflow-y-auto"></div>
-                        <div className="flex p-1 felx-row">
+                        <form onSubmit={handleSubmit} className="flex p-1 felx-row">
                           <input
                             className="flex-grow p-2 mr-2 text-black bg-white rounded shadow"
                             type="text"
@@ -188,7 +198,7 @@ export default function Profile() {
                           <button className="p-2 text-white bg-blue-500 rounded shadow">
                             Send
                           </button>
-                        </div>
+                        </form>
                       </div>
                     </div>
                   )}
