@@ -4,11 +4,13 @@ import { useGet } from "../../hooks/useGet";
 
 export default function ChallangeCard() {
   const { user } = useAuthContext();
+  let username = user ? user.username : null;
+
   const {
     data: friendsData,
     loading: friendsLoading,
     error: friendsError,
-  } = useGet("/api/friend/all/" + user.username, false);
+  } = useGet("/api/friend/all/" + username, false);
 
   const urlforsendingInvitation = "/api/friend/invite";
 

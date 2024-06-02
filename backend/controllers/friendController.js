@@ -230,7 +230,17 @@ const inviteFriendEmail = async (req, res) => {
 // Show all friends
 const showAllFriends = async (req, res) => {
   const { username } = req.params;
+  console.log(username);
+  if (!username) {
+    return res.status(403).json({ message: "Username is required" });
+  }
+
   const user = await User.findOne({ username });
+
+  if (!user) {
+    return res.status(404).json({ message: "User does not exist" });
+  }
+
   const userFriends = await Friends.findOne({ user: user._id }).populate(
     "friends"
   );
