@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import FriendRequestButton from "../components/Profile/FriendRequestButton";
 import Profileinfo from "../components/Profile/Profileinfo";
@@ -7,7 +7,6 @@ import Profilepic from "../components/Profile/Profilepic";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useGet } from "../hooks/useGet";
 import { socket } from "../socket";
-import { Link } from "react-router-dom";
 
 export default function Profile() {
   const { username } = useParams();
@@ -38,7 +37,7 @@ export default function Profile() {
   const [showChatBox, setShowChatBox] = useState(false);
 
   useEffect(() => {
-    if (userwithfriends && userwithfriends.friends) {
+    if (profileUser && userwithfriends && userwithfriends.friends) {
       const { friends, friendRequestsIn, friendRequestsOut } =
         userwithfriends.friends;
 
@@ -69,6 +68,37 @@ export default function Profile() {
       }
     }
   }, [userwithfriends]);
+
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [allMessages, setAllMessages] = useState([]);
+  // const [fooEvents, setFooEvents] = useState([]);
+
+  useEffect(() => {
+    function onConnect() {
+      setIsConnected(true);
+      console.log("Connected to socket<><><>");
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    function receive(value) {
+      console.log("Received message: ", value);
+      setAllMessages((prevMessages) => [...prevMessages, "received;" + value]);
+      console.log("all messages", allMessages);
+    }
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("message", receive);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("message", receive);
+    };
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -105,14 +135,17 @@ export default function Profile() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const message = e.target[0].value;
-    console.log("the message is",message);
+    var message = e.target[0].value;
+    console.log("the message is", message);
     const to = username;
-    console.log("the message is going to",to);
+    console.log("the message is going to", to);
     socket.emit("sendMessage", { message, to });
+    message = "sent;" + message;
+    setAllMessages((prevMessages) => [...prevMessages, message]);
     e.target[0].value = "";
-  }
-  
+    console.log("all messages", allMessages);
+  };
+
   return (
     <div className="w-screen h-screen font-mono text-white bg-dark-1">
       <div className="flex flex-col w-full h-full">
@@ -188,8 +221,27 @@ export default function Profile() {
                             X
                           </button>
                         </nav>
-                        <div className="flex flex-col overflow-y-auto"></div>
-                        <form onSubmit={handleSubmit} className="flex p-1 felx-row">
+                        <div className="flex flex-col overflow-y-auto">
+                          {allMessages.map((message, index) => {
+                            const [type, content] = message.split(";");
+                            return (
+                              <div
+                                key={index}
+                                className={`p-2 m-2 rounded ${
+                                  type === "sent"
+                                    ? "self-end bg-blue-500"
+                                    : "self-start bg-green-500"
+                                }`}
+                              >
+                                {content}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <form
+                          onSubmit={handleSubmit}
+                          className="flex p-1 felx-row"
+                        >
                           <input
                             className="flex-grow p-2 mr-2 text-black bg-white rounded shadow"
                             type="text"
@@ -205,7 +257,10 @@ export default function Profile() {
                 </div>
               )
             ) : (
-              <Link to="/accounts/login" className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">
+              <Link
+                to="/accounts/login"
+                className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+              >
                 Login
               </Link>
             )}
