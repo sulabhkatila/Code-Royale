@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import FriendRequestButton from "../components/Profile/FriendRequestButton";
@@ -6,11 +6,12 @@ import Profileinfo from "../components/Profile/Profileinfo";
 import Profilepic from "../components/Profile/Profilepic";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useGet } from "../hooks/useGet";
-import { socket } from "../socket";
+import { useSocketContext } from "../hooks/useSocketContext";
 
 export default function Profile() {
   const { username } = useParams();
   const { user } = useAuthContext();
+  const socket = useSocketContext();
 
   // fetch the user whose profile is being looked from the backend
   // while fetching the user, also send information on which user is making the request
@@ -69,19 +70,22 @@ export default function Profile() {
     }
   }, [userwithfriends]);
 
-  const [isConnected, setIsConnected] = useState(socket.connected);
   const [allMessages, setAllMessages] = useState([]);
-  // const [fooEvents, setFooEvents] = useState([]);
+
+  const sendMessage = useCallback(
+    (message, to) => {
+      console.log("IN SEND MESSAGE FUNCTION");
+      if (!socket) return;
+      console.log("SENDING MESSAGE");
+      socket.emit("sendMessage", { message, to });
+      message = "sent;" + message;
+      setAllMessages((prevMessages) => [...prevMessages, message]);
+    },
+    [socket]
+  );
 
   useEffect(() => {
-    function onConnect() {
-      setIsConnected(true);
-      console.log("Connected to socket<><><>");
-    }
-
-    function onDisconnect() {
-      setIsConnected(false);
-    }
+    if (!socket) return;
 
     function receive(value) {
       console.log("Received message: ", value);
@@ -89,26 +93,33 @@ export default function Profile() {
       console.log("all messages", allMessages);
     }
 
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
     socket.on("message", receive);
 
     return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
       socket.off("message", receive);
     };
-  }, []);
+  }, [socket, allMessages]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    var message = e.target[0].value;
+    console.log("the message is", message);
+    const to = username;
+    console.log("the message is going to", to);
+    sendMessage(message, to);
+    e.target[0].value = "";
+    console.log("all messages", allMessages);
+  };
 
   useEffect(() => {
-    if (user) {
+    if (user && socket) {
       socket.io.opts.query = {
         token: user.token,
         connectToUser: username,
       };
       socket.connect();
     }
-  }, [user]);
+  }, [user, socket]);
 
   const acceptFR = () => {
     setShowAcceptReject(false);
@@ -131,19 +142,6 @@ export default function Profile() {
 
   const toggleChatBox = (val) => {
     setShowChatBox(val);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    var message = e.target[0].value;
-    console.log("the message is", message);
-    const to = username;
-    console.log("the message is going to", to);
-    socket.emit("sendMessage", { message, to });
-    message = "sent;" + message;
-    setAllMessages((prevMessages) => [...prevMessages, message]);
-    e.target[0].value = "";
-    console.log("all messages", allMessages);
   };
 
   return (
