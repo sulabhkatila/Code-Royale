@@ -1,9 +1,10 @@
+import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import ChallangeCard from "../components/Cards/ChallangeCard";
 import NavBar from "../components/NavBar";
 import ProblemTable from "../components/ProblemTable";
 import { useGet } from "../hooks/useGet";
-import { useEffect, useState } from "react";
+import { useSocketContext } from "../hooks/useSocketContext";
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -17,13 +18,56 @@ export default function Home() {
   const MAX_TABLE_WIDTH = 1000;
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [showCard, setShowCard] = useState(windowWidth >= MIN_CARD_WIDTH + MID_TABLE_WIDTH + (120));
+  const [showCard, setShowCard] = useState(
+    windowWidth >= MIN_CARD_WIDTH + MID_TABLE_WIDTH + 120
+  );
+
+  const socket = useSocketContext();
+
+  const acceptChallange = useCallback(
+    (challanger) => {
+      socket.emit("acceptChallange", challanger);
+    },
+    [socket]
+  );
+
+  const rejectChallange = useCallback(
+    (challanger) => {
+      socket.emit("rejectChallange", challanger);
+    },
+    [socket]
+  );
+
+  const cancelChallange = useCallback(
+    (challanger) => {
+      socket.emit("cancelChallange", challanger);
+    },
+    [socket]
+  );
+
+  const sendChallange = useCallback(
+    (challanger) => {
+      socket.emit("sendChallange", challanger);
+    },
+    [socket]
+  );
 
   useEffect(() => {
+    socket.on("challange", (challanger) => {
+      acceptChallange(challanger);
+    });
+
     
+
+    return () => {
+      socket.off("challange");
+    };
+  }, [socket]);
+
+  useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
-      if (windowWidth >= MIN_CARD_WIDTH + MID_TABLE_WIDTH + (120)) {
+      if (windowWidth >= MIN_CARD_WIDTH + MID_TABLE_WIDTH + 120) {
         setShowCard(true);
       } else {
         setShowCard(false);
@@ -35,7 +79,6 @@ export default function Home() {
       window.removeEventListener("resize", handleResize);
     };
   });
-  
 
   let query = useQuery();
   const {
@@ -69,9 +112,12 @@ export default function Home() {
                 maxWidth: `${MAX_TABLE_WIDTH}px`,
               }}
             >
-              <ProblemTable problems={problems} showDifficulty={windowWidth >= MIN_TABLE_WIDTH + 30} />
+              <ProblemTable
+                problems={problems}
+                showDifficulty={windowWidth >= MIN_TABLE_WIDTH + 30}
+              />
             </div>
-            { showCard && (
+            {showCard && (
               <div
                 className="ml-5"
                 style={{
