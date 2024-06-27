@@ -1,9 +1,13 @@
 import MonacoEditor from "@monaco-editor/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Split from "react-split";
+import { useAuthContext } from "../../hooks/useAuthContext";
+import { useSocketContext } from "../../hooks/useSocketContext";
 import { useSubmit } from "../../hooks/useSubmit";
 
 export default function CodeArena({ problem }) {
+  const [didWin, setDidWin] = useState(null);
+
   // We get ResizeObserver loop completed with undelivered notifications error
   // when resizing the split window to a certain extent
   // This error is benign and can be ignored
@@ -30,6 +34,43 @@ export default function CodeArena({ problem }) {
     });
   }, []);
 
+  const socket = useSocketContext();
+  const {user} = useAuthContext();
+  useEffect(() => {
+    if (user && socket) {
+      socket.io.opts.query = {
+        token: user.token,
+        connectToUser: null,
+      };
+      socket.connect();
+    }
+  }, [user, socket]);
+
+  const sendWinningInfo = useCallback((problemId) => {
+    if (!socket) {
+      console.log("Socket not available");
+      return;
+    }
+
+    if (didWin === false) return;
+    setDidWin(true);
+    socket.emit("iWon", { problemId });
+  });
+  useEffect(() => {
+    if (!socket) {
+      return;
+    }
+    // Listen for if the other person won
+    socket.on("opponentWon", () => {
+      console.log("Opponent won");
+      // if (didWin === true) return;
+      console.log("You Loose!");
+      setDidWin(false);
+      alert("You Loose!");
+      window.history.back();
+    });
+  });
+
   var userOutput = null;
   var splitSize = [100, 0];
   const codeInEditor = useRef(problem.boilerPlate.python);
@@ -42,7 +83,6 @@ export default function CodeArena({ problem }) {
     if (language === "Python") {
       const inputs = problem.tests.map((test) => test.input);
       solution += `\n\ninputs = ${JSON.stringify(inputs)}\n`;
-      console.log(inputs); ////
     }
     console.log(solution);
     await submit(problem.name, language, solution);
@@ -114,6 +154,10 @@ export default function CodeArena({ problem }) {
         return testPassed ? count + 1 : count;
       }, 0);
       setPassedTests(passedCount);
+
+      if (passedCount === problem.tests.length) {
+        sendWinningInfo(problem._id);
+      }
     }, []);
 
     return (

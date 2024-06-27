@@ -44,13 +44,13 @@ async function main() {
   let socket_to_user = {};
   let user_to_socket = {};
 
+  challenges = {}; // fromsocket: toSocket , toSocket: fromSocket
+  challanged_users = {}; // fromuser: touser, touser: fromuser
+
   io.on("connection", async (socket) => {
     console.log("User connected via socket", socket.id);
     const token = socket.handshake.query.token;
-    // const connectToUser = socket.handshake.query.connectToUser;
-
     const { _id } = jwt.verify(token, process.env.JWT_SECRET);
-
     const thisUser = await User.findById(_id);
 
     if (!thisUser) {
@@ -59,7 +59,6 @@ async function main() {
 
     socket_to_users[socket.id] = thisUser.username;
     users_to_socket[thisUser.username] = socket.id;
-
     // if (connectToUser !== null) {}
     // const connectedUsers = thisUser.username + "->" + connectToUser;
 
@@ -121,16 +120,24 @@ async function main() {
       const fromSocket = socket.id;
       const toSocket = users_to_socket[from]; // from is the user who sent the challange
       if (toSocket) {
-        socket.broadcast.to(toSocket).emit("acceptChallange", from);
+        challenges[fromSocket] = toSocket;
+        challenges[toSocket] = fromSocket;
+        challanged_users[from] = socket_to_users[fromSocket];
+        challanged_users[socket_to_users[fromSocket]] = from;
+        socket.broadcast
+          .to(toSocket)
+          .emit("challangeAccepted", from, problemId);
         return;
       }
     });
 
-    socket.on("rejectChallange", (from) => {
+    socket.on("rejectChallange", (from, problemId) => {
       const fromSocket = socket.id;
       const toSocket = users_to_socket[from]; // from is the user who sent the challange
       if (toSocket) {
-        socket.broadcast.to(toSocket).emit("rejectChallange", from);
+        socket.broadcast
+          .to(toSocket)
+          .emit("challangeRejected", from, problemId);
         return;
       }
     });
@@ -142,6 +149,18 @@ async function main() {
         socket.broadcast.to(toSocket).emit("cancelChallange", from);
         return;
       }
+    });
+
+    socket.on("iWon", () => {
+      console.log("someone won");
+      const fromSocket = socket.id;
+      const fromSocketUser = socket_to_users[fromSocket];
+      const toSocketUser = challanged_users[fromSocketUser];
+      const toSocket = users_to_socket[toSocketUser];
+      console.log("the winner is ", fromSocketUser);
+      console.log("the looser is ", toSocketUser);
+      socket.broadcast.to(toSocket).emit("opponentWon", toSocket);
+      return;
     });
   });
 }

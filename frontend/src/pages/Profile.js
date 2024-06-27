@@ -13,6 +13,7 @@ export default function Profile() {
   const { user } = useAuthContext();
   const socket = useSocketContext();
 
+  const [receivedChallangeFrom, setReceivedChallangeFrom] = useState(null);
   const [receivedChallange, setReceivedChallange] = useState(null);
   const [sentChallange, setSentChallange] = useState(null);
 
@@ -85,42 +86,70 @@ export default function Profile() {
     [socket]
   );
 
-  const sendChallange = useCallback(
-    (problemId, to) => {
-      if (!socket) return;
-      socket.emit("sendChallange", problemId, to);
-    },
+  const sendChallange = useCallback((problemId, to) => {
+    if (!socket) return;
+    socket.emit("sendChallange", problemId, to);
+  });
 
-    useEffect(() => {
-      if (!socket) return;
+  const acceptChallange = useCallback((from, problemId) => {
+    if (!socket) return;
+    socket.emit("acceptChallange", from, problemId);
+  });
 
-      function receive(value) {
-        console.log("Received message: ", value);
-        setAllMessages((prevMessages) => [
-          ...prevMessages,
-          "received;" + value,
-        ]);
-        console.log("all messages", allMessages);
-      }
+  const rejectChallange = useCallback((from, problemId) => {
+    if (!socket) return;
+    socket.emit("rejectChallange", from, problemId);
+  });
 
-      function receiveChallange(from, problemId) {
-        console.log(
-          "Received challange from: ",
-          from,
-          "for problem id: ",
-          problemId
-        );
-        setReceivedChallange({ from, problemId });
-      }
+  useEffect(() => {
+    if (!socket) return;
 
-      socket.on("message", receive);
-      socket.on("gotChallange", receiveChallange);
+    function receive(value) {
+      console.log("Received message: ", value);
+      setAllMessages((prevMessages) => [...prevMessages, "received;" + value]);
+      console.log("all messages", allMessages);
+    }
 
-      return () => {
-        socket.off("message", receive);
-      };
-    }, [socket, allMessages])
-  );
+    function receiveChallange(from, problemId) {
+      console.log(
+        "Received challange from: ",
+        from,
+        "for problem id: ",
+        problemId
+      );
+      setReceivedChallangeFrom(from);
+      setReceivedChallange(problemId);
+      setTimeout(() => {
+        console.log("Challange problem", receivedChallange);
+      }, 5000);
+    }
+
+    function challangeGotAccepted(from, problemId) {
+      console.log("Challange got accepted from: ", from, "for problem id: ", problemId);
+      setSentChallange(null);
+      window.location.href = `/problem/${problemId}`;
+    }
+
+    function challangeGotRejected(from, problemId) {
+      console.log("Challange got rejected from: ", from, "for problem id: ", problemId);
+      setSentChallange(null);
+    }
+
+    function challangeGotCancelled(from, problemId) {
+      console.log("Challange got cancelled from: ", from);
+      setSentChallange(null);
+    }
+
+    socket.on("message", receive);
+    socket.on("gotChallange", receiveChallange);
+    socket.on("challangeAccepted", challangeGotAccepted);
+    socket.on("challangeRejected", challangeGotRejected);
+    socket.on("challangeCancelled", challangeGotCancelled);
+
+    return () => {
+      socket.off("message", receive);
+    };
+  }, [socket, allMessages]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -166,12 +195,18 @@ export default function Profile() {
     setShowChatBox(val);
   };
 
-  const handleRejectChallange = () => {
-    setReceivedChallange(null);
-  };
-
   const handleAcceptChallange = () => {
+    console.log(receivedChallangeFrom, receivedChallange)
+    console.log()
+    acceptChallange(receivedChallangeFrom, receivedChallange);
     setReceivedChallange(null);
+    setReceivedChallangeFrom(null);
+  }
+
+  const handleRejectChallange = () => {
+    rejectChallange(receivedChallangeFrom, receivedChallange);
+    setReceivedChallange(null);
+    setReceivedChallangeFrom(null);
   };
 
   if (receivedChallange) {
@@ -183,12 +218,13 @@ export default function Profile() {
               hello world
             </div>
             <div className="flex justify-between p-5">
-              <button
+              <Link
+                to={`/problem/${receivedChallange}/`}
                 onClick={handleAcceptChallange}
                 className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
               >
                 Accept
-              </button>
+              </Link>
               <button
                 onClick={handleRejectChallange}
                 className="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700"
@@ -267,7 +303,7 @@ export default function Profile() {
                     </button>
                     <button
                       className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
-                      onClick={() => sendChallange("problemId", username)}
+                      onClick={() => sendChallange("remove-nth-node-from-end-of-list", username)}
                     >
                       Challange
                     </button>
