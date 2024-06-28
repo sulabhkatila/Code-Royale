@@ -36,6 +36,47 @@ export default function CodeArena({ problem }) {
 
   const socket = useSocketContext();
   const {user} = useAuthContext();
+
+  function WinLooseModal({ win, onClose }) {
+    if (win === null) return null;
+  
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000, // Ensure it's above everything else
+      }}>
+        <div style={{
+          padding: '20px',
+          backgroundColor: '#fff',
+          borderRadius: '10px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}>
+          {
+            (win === true ?
+              <h1 style={{ color: 'green', fontSize: '2em' }}>You Win!</h1>:
+              <h1 style={{ color: 'red', fontSize: '2em' }}>You Loose!</h1>)
+          }
+          <button onClick={onClose} style={{
+            marginTop: '20px',
+            padding: '10px 20px',
+            fontSize: '1em',
+            cursor: 'pointer',
+          }}>Close</button>
+        </div>
+      </div>
+    );
+  }
+  
   useEffect(() => {
     if (user && socket) {
       socket.io.opts.query = {
@@ -53,21 +94,24 @@ export default function CodeArena({ problem }) {
     }
 
     if (didWin === false) return;
+    if (didWin === true) return;
     setDidWin(true);
     socket.emit("iWon", { problemId });
   });
+
+  const goBack = () => {
+    window.history.back();
+  }
+  
   useEffect(() => {
     if (!socket) {
       return;
     }
     // Listen for if the other person won
     socket.on("opponentWon", () => {
-      console.log("Opponent won");
-      // if (didWin === true) return;
-      console.log("You Loose!");
+      if (didWin === true) return;
       setDidWin(false);
-      alert("You Loose!");
-      window.history.back();
+      // window.history.back();
     });
   });
 
@@ -282,6 +326,8 @@ export default function CodeArena({ problem }) {
   }
 
   return (
+    <>
+    <WinLooseModal win={didWin} onClose={() => goBack()} />
     <div className="h-screen">
       <div className="w-full h-full">
         <Split
@@ -312,5 +358,6 @@ export default function CodeArena({ problem }) {
         </Split>
       </div>
     </div>
+    </>
   );
 }

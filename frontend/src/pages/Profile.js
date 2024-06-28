@@ -119,19 +119,26 @@ export default function Profile() {
       );
       setReceivedChallangeFrom(from);
       setReceivedChallange(problemId);
-      setTimeout(() => {
-        console.log("Challange problem", receivedChallange);
-      }, 5000);
     }
 
     function challangeGotAccepted(from, problemId) {
-      console.log("Challange got accepted from: ", from, "for problem id: ", problemId);
+      console.log(
+        "Challange got accepted from: ",
+        from,
+        "for problem id: ",
+        problemId
+      );
       setSentChallange(null);
       window.location.href = `/problem/${problemId}`;
     }
 
     function challangeGotRejected(from, problemId) {
-      console.log("Challange got rejected from: ", from, "for problem id: ", problemId);
+      console.log(
+        "Challange got rejected from: ",
+        from,
+        "for problem id: ",
+        problemId
+      );
       setSentChallange(null);
     }
 
@@ -196,12 +203,12 @@ export default function Profile() {
   };
 
   const handleAcceptChallange = () => {
-    console.log(receivedChallangeFrom, receivedChallange)
-    console.log()
+    console.log(receivedChallangeFrom, receivedChallange);
+    console.log();
     acceptChallange(receivedChallangeFrom, receivedChallange);
     setReceivedChallange(null);
     setReceivedChallangeFrom(null);
-  }
+  };
 
   const handleRejectChallange = () => {
     rejectChallange(receivedChallangeFrom, receivedChallange);
@@ -209,163 +216,174 @@ export default function Profile() {
     setReceivedChallangeFrom(null);
   };
 
-  if (receivedChallange) {
-    return (
-      <div className="flex w-screen h-screen font-mono text-white bg-dark-1">
-        <div className="flex items-center justify-center w-full h-full">
-          <div className="flex flex-col h-[400px] w-[400px] bg-dark-2 justify-between">
-            <div className="flex items-center justify-center flex-grow">
-              hello world
+  const receivedChallangeModal = (didReceive, from) => {
+    if (didReceive) {
+      return (
+        <div className="fixed flex flex-col items-center justify-center w-full h-full bg-gray-500 bg-opacity-70 z-[9999]">
+          <div className="flex flex-col items-center justify-between w-[500px] h-[400px] bg-white rounded-lg">
+            <div className="flex flex-col items-center justify-center w-full h-full">
+              <div className="text-2xl font-bold">Challange</div>
+              <div className="text-lg">You have received a challange from {from}</div>
             </div>
-            <div className="flex justify-between p-5">
+            <div className="flex flex-row justify-between w-full">
               <Link
-                to={`/problem/${receivedChallange}/`}
-                onClick={handleAcceptChallange}
+                to={`/problem/${receivedChallange}`}
                 className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+                onClick={handleAcceptChallange}
               >
                 Accept
               </Link>
               <button
+                className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
                 onClick={handleRejectChallange}
-                className="px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-700"
               >
                 Reject
               </button>
-            </div>
+              
+            </div> 
+            
           </div>
         </div>
-      </div>
-    );
-  } else if (sentChallange) {
-  } else {
-    return (
-      <div className="w-screen h-screen font-mono text-white bg-dark-1">
-        <div className="flex flex-col w-full h-full">
-          <NavBar />
+      );
+    }
+  };
+  return (
+    <>
+    {receivedChallange && receivedChallangeFrom && receivedChallangeModal(true, receivedChallangeFrom)}
+    <div className="w-screen h-screen font-mono text-white bg-dark-1">
+      <div className="flex flex-col w-full h-full">
+        <NavBar />
 
-          <div className="flex flex-col items-center justify-between w-full h-full my-5">
-            <Profilepic />
-            <div className="w-full h-full overflow-auto">
-              {profileUser ? (
-                <Profileinfo profileUser={profileUser} />
-              ) : error ? (
-                <>Error {{ error }}</>
+        <div className="flex flex-col items-center justify-between w-full h-full my-5">
+          <Profilepic />
+          <div className="w-full h-full overflow-auto">
+            {profileUser ? (
+              <Profileinfo profileUser={profileUser} />
+            ) : error ? (
+              <>Error {{ error }}</>
+            ) : (
+              <>loading ...</>
+            )}
+          </div>
+          <div className="">
+            {user ? (
+              user.username === username ? (
+                <>Edit Profile</>
+              ) : showSendFR ? (
+                <FriendRequestButton
+                  user={user}
+                  profileUser={profileUser}
+                  task={0}
+                  onClic={sendFR}
+                />
+              ) : showCancelFR ? (
+                <FriendRequestButton
+                  user={user}
+                  profileUser={profileUser}
+                  task={1}
+                  onClic={cancelFR}
+                />
+              ) : showAcceptReject ? (
+                <div className="flex flex-row justify-between w-[500px]">
+                  <FriendRequestButton
+                    user={user}
+                    profileUser={profileUser}
+                    task={2}
+                    onClic={acceptFR}
+                  />
+                  <FriendRequestButton
+                    user={user}
+                    profileUser={profileUser}
+                    task={3}
+                    onClic={rejectFR}
+                  />
+                </div>
               ) : (
-                <>loading ...</>
-              )}
-            </div>
-            <div className="">
-              {user ? (
-                user.username === username ? (
-                  <>Edit Profile</>
-                ) : showSendFR ? (
+                <div className="flex flex-row justify-between w-[500px]">
                   <FriendRequestButton
                     user={user}
                     profileUser={profileUser}
-                    task={0}
-                    onClic={sendFR}
+                    task={4}
+                    onClic={removeFriend}
                   />
-                ) : showCancelFR ? (
-                  <FriendRequestButton
-                    user={user}
-                    profileUser={profileUser}
-                    task={1}
-                    onClic={cancelFR}
-                  />
-                ) : showAcceptReject ? (
-                  <div className="flex flex-row justify-between w-[500px]">
-                    <FriendRequestButton
-                      user={user}
-                      profileUser={profileUser}
-                      task={2}
-                      onClic={acceptFR}
-                    />
-                    <FriendRequestButton
-                      user={user}
-                      profileUser={profileUser}
-                      task={3}
-                      onClic={rejectFR}
-                    />
-                  </div>
-                ) : (
-                  <div className="flex flex-row justify-between w-[500px]">
-                    <FriendRequestButton
-                      user={user}
-                      profileUser={profileUser}
-                      task={4}
-                      onClic={removeFriend}
-                    />
-                    <button
-                      className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
-                      onClick={() => toggleChatBox(true)}
-                    >
-                      Message
-                    </button>
-                    <button
-                      className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
-                      onClick={() => sendChallange("remove-nth-node-from-end-of-list", username)}
-                    >
-                      Challange
-                    </button>
-                    {showChatBox && (
-                      <div className="fixed m-4 bg-gray-500 rounded shadow-lg bottom-16 right-4 w-[600px] h-[600px]">
-                        <div className="flex flex-col justify-between w-full h-full">
-                          <nav className="flex justify-between w-full p-4 h-[30px]">
-                            <div>Chat</div>
-                            <button
-                              className="flex items-center justify-center w-6 h-6 text-white bg-red-500 rounded-lg"
-                              onClick={() => toggleChatBox(false)}
-                            >
-                              X
-                            </button>
-                          </nav>
-                          <div className="flex flex-col overflow-y-auto">
-                            {allMessages.map((message, index) => {
-                              const [type, content] = message.split(";");
-                              return (
-                                <div
-                                  key={index}
-                                  className={`p-2 m-2 rounded ${
-                                    type === "sent"
-                                      ? "self-end bg-blue-500"
-                                      : "self-start bg-green-500"
-                                  }`}
-                                >
-                                  {content}
-                                </div>
-                              );
-                            })}
-                          </div>
-                          <form
-                            onSubmit={handleSubmit}
-                            className="flex p-1 felx-row"
+                  <button
+                    className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+                    onClick={() => toggleChatBox(true)}
+                  >
+                    Message
+                  </button>
+                  <button
+                    className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+                    onClick={() =>
+                      sendChallange(
+                        "remove-nth-node-from-end-of-list",
+                        username
+                      )
+                    }
+                  >
+                    Challange
+                  </button>
+                  {showChatBox && (
+                    <div className="fixed m-4 bg-gray-500 rounded shadow-lg bottom-16 right-4 w-[600px] h-[600px]">
+                      <div className="flex flex-col justify-between w-full h-full">
+                        <nav className="flex justify-between w-full p-4 h-[30px]">
+                          <div>Chat</div>
+                          <button
+                            className="flex items-center justify-center w-6 h-6 text-white bg-red-500 rounded-lg"
+                            onClick={() => toggleChatBox(false)}
                           >
-                            <input
-                              className="flex-grow p-2 mr-2 text-black bg-white rounded shadow"
-                              type="text"
-                              placeholder="Type a message..."
-                            />
-                            <button className="p-2 text-white bg-blue-500 rounded shadow">
-                              Send
-                            </button>
-                          </form>
+                            X
+                          </button>
+                        </nav>
+                        <div className="flex flex-col overflow-y-auto">
+                          {allMessages.map((message, index) => {
+                            const [type, content] = message.split(";");
+                            return (
+                              <div
+                                key={index}
+                                className={`p-2 m-2 rounded ${
+                                  type === "sent"
+                                    ? "self-end bg-blue-500"
+                                    : "self-start bg-green-500"
+                                }`}
+                              >
+                                {content}
+                              </div>
+                            );
+                          })}
                         </div>
+                        <form
+                          onSubmit={handleSubmit}
+                          className="flex p-1 felx-row"
+                        >
+                          <input
+                            className="flex-grow p-2 mr-2 text-black bg-white rounded shadow"
+                            type="text"
+                            placeholder="Type a message..."
+                          />
+                          <button className="p-2 text-white bg-blue-500 rounded shadow">
+                            Send
+                          </button>
+                        </form>
                       </div>
-                    )}
-                  </div>
-                )
-              ) : (
-                <Link
-                  to="/accounts/login"
-                  className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
-                >
-                  Login
-                </Link>
-              )}
-            </div>
+                    </div>
+                  )}
+                </div>
+              )
+            ) : (
+              <Link
+                to="/accounts/login"
+                className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+              >
+                Login
+              </Link>
+            )}
           </div>
         </div>
       </div>
-    );
-  }
+    </div>
+    </>
+  );
+
 }
+
