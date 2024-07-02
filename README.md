@@ -5,7 +5,7 @@
 ### A Quick Demo
 
 
-https://github.com/sulabhkatila/code-royale/assets/113466992/fb107e52-c3e5-4725-b234-5eb264a81162
+https://github.com/sulabhkatila/Code-Royale/assets/113466992/874e81ae-2504-49f4-8747-99f0a6b1a7ea
 
 
 
